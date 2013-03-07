@@ -5,9 +5,9 @@
   <ExcludeCategories>false</ExcludeCategories>
   <Nodes>
     <Node UniqueName="[0-1000]C:\Users\Pete\Documents\GitHub\FileZapper\FileZapper.Test\FileZapper.Test.dll.nunit" Expanded="true" />
-    <Node UniqueName="[0-1023]C:\Users\Pete\Documents\GitHub\FileZapper\FileZapper.Test\bin\Debug\FileZapper.Test.dll" Expanded="true" />
-    <Node UniqueName="[0-1024]FileZapper" Expanded="true" />
-    <Node UniqueName="[0-1025]FileZapper.Test" Expanded="true" />
+    <Node UniqueName="[0-1024]C:\Users\Pete\Documents\GitHub\FileZapper\FileZapper.Test\bin\Debug\FileZapper.Test.dll" Expanded="true" />
+    <Node UniqueName="[0-1025]FileZapper" Expanded="true" />
+    <Node UniqueName="[0-1026]FileZapper.Test" Expanded="true" />
     <Node UniqueName="[0-1001]FileZapper.Test.CalculateHashesTester" Expanded="true" />
     <Node UniqueName="[0-1011]FileZapper.Test.ParseFileSystemTester" Expanded="true" />
     <Node UniqueName="[0-1004]FileZapper.Test.PhaseCalculateHashesTester" Expanded="true" />
