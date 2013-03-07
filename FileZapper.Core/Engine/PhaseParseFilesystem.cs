@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2012 Peter Wetzel
+    Copyright (C) 2013 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,15 +19,16 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FileZapper.Core.Data;
+using FileZapper.Core.Utilities;
+using log4net;
 using Microsoft.VisualBasic.FileIO;
 
-namespace FileZapper
+namespace FileZapper.Core.Engine
 {
-    /// <summary>
-    /// Parse all of our root folders for new/updated file info
-    /// </summary>
-    class PhaseParseFilesystem : IZapperPhase
+    public class PhaseParseFilesystem : IZapperPhase
     {
+        private readonly ILog _log = LogManager.GetLogger("PhaseParseFilesystem");
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
         public string Name { get; set; }
@@ -40,10 +41,7 @@ namespace FileZapper
 
         public void Process()
         {
-            var files = ZapperProcessor.GetFilesAll();
-            var masterfiles = files.ToDictionary<ZapperFile, string>(x => x.FullPath);
-            // Each root is done in sequence (Path in DB is clustered PK); internally within root, parallel.
-            foreach (var root in ZapperProcessor.EnabledRootFolders)
+            foreach (var root in ZapperProcessor.Settings.RootFolders)
             {
                 Console.WriteLine("{0}: Parsing folder {1}", DateTime.Now.ToString("HH:mm:ss.fff"), root.FullPath);
                 var filepaths = Directory.EnumerateFiles(root.FullPath, "*.*", System.IO.SearchOption.AllDirectories);
@@ -57,21 +55,23 @@ namespace FileZapper
                         }
                         else
                         {
-                            ZapperFile file = new ZapperFile(root, filepath);
-                            if (!file.IsSystem)
+                            var zfile = new ZapperFile(filepath);
+                            if (!zfile.IsSystem)
                             {
-                                if (ZapperProcessor.UnwantedExtensions.Contains(file.Extension))
+                                if (ZapperProcessor.Settings.UnwantedExtensions.Contains(zfile.Extension))
                                 {
                                     FileSystem.DeleteFile(filepath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-                                }
-                                else if (!ZapperProcessor.SkippedExtensions.Contains(file.Extension))
-                                {
-                                    if (!masterfiles.ContainsKey(file.FullPath)
-                                        ||
-                                        (masterfiles.ContainsKey(file.FullPath)
-                                        && !file.EqualsIgnoreHash(masterfiles[file.FullPath])))
+                                    ZapperFileDeleted zfiledeleted = new ZapperFileDeleted(zfile, ZapperProcessor.ZapperSession.Id);
+                                    if (!ZapperProcessor.ZapperFilesDeleted.TryAdd(zfiledeleted.FullPath, zfiledeleted))
                                     {
-                                        file.SaveToDB();
+                                        throw new Exception("Unable to add deleted file to list: " + zfiledeleted.FullPath.ToString());
+                                    }
+                                }
+                                else if (!ZapperProcessor.Settings.SkippedExtensions.Contains(zfile.Extension))
+                                {
+                                    if (!ZapperProcessor.ZapperFiles.TryAdd(zfile.FullPath, zfile))
+                                    {
+                                        throw new Exception("Unable to add file to list: " + zfile.FullPath.ToString());
                                     }
                                 }
                             }
@@ -82,12 +82,11 @@ namespace FileZapper
                 {
                     ae.Handle(e =>
                     {
-                        Exceptioneer.Log(e);
+                        Exceptioneer.Log(_log, e);
                         return true;
                     });
                 }
             }
-            masterfiles = null;
         }
     }
 }

@@ -8,10 +8,11 @@
     <ProjectGuid>{D77746B1-E1D8-4028-AFC2-D2DEE4470E74}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FileZapper.Data</RootNamespace>
-    <AssemblyName>FileZapper.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>FileZapper.Core</RootNamespace>
+    <AssemblyName>FileZapper.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,22 +31,49 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.1.15.0\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ZapperFolderConfigCollection.cs" />
+    <Compile Include="Configuration\ZapperFolderConfigElement.cs" />
+    <Compile Include="Configuration\ZapperFolderConfigSection.cs" />
+    <Compile Include="Configuration\FileZapperSettings.cs" />
+    <Compile Include="Data\ZapperSessionPhase.cs" />
+    <Compile Include="Data\ZapperFileDeleted.cs" />
+    <Compile Include="Data\ZapperSession.cs" />
+    <Compile Include="Engine\IZapperPhase.cs" />
+    <Compile Include="Engine\PhaseCalculateHashes.cs" />
+    <Compile Include="Engine\PhaseCleanup.cs" />
+    <Compile Include="Engine\PhaseParseFilesystem.cs" />
+    <Compile Include="Engine\PhaseRemoveDuplicates.cs" />
+    <Compile Include="Engine\ZapperProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ZapperExtension.cs" />
-    <Compile Include="ZapperFile.cs" />
-    <Compile Include="ZapperFolder.cs" />
+    <Compile Include="Data\ZapperFile.cs" />
+    <Compile Include="Data\ZapperFolder.cs" />
+    <Compile Include="Utilities\Crc32.cs" />
+    <Compile Include="Utilities\Exceptioneer.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

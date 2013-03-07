@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2012 Peter Wetzel
+    Copyright (C) 2013 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,15 +15,21 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-namespace FileZapper
-{
-    interface IZapperPhase
-    {
-        ZapperProcessor ZapperProcessor { get; set; }
-        int PhaseOrder { get; set; }
-        string Name { get; set; }
-        bool IsInitialPhase { get; set; }
+using System;
+using FileZapper.Core.Data;
+using log4net;
 
-        void Process();
+namespace FileZapper.Core.Utilities
+{
+    public class Exceptioneer
+    {
+        static public void Log(ILog log, Exception ex, string sMessage = null)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("{0}: ERROR ******", DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine("For additional information, please see the log file.");
+            Console.ForegroundColor = ConsoleColor.White;
+            log.Error(sMessage ?? ex.Message, ex);
+        }
     }
 }

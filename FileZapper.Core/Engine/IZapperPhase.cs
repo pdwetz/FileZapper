@@ -15,16 +15,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using FileZapper.Core.Engine;
-
-namespace FileZapper
+namespace FileZapper.Core.Engine
 {
-    class Program
+    public interface IZapperPhase
     {
-        static void Main(string[] args)
-        {
-            ZapperProcessor z = new ZapperProcessor();
-            z.StartConsole();
-        }
+        ZapperProcessor ZapperProcessor { get; set; }
+        int PhaseOrder { get; set; }
+        string Name { get; set; }
+        bool IsInitialPhase { get; set; }
+
+        void Process();
     }
 }
