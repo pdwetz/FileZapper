@@ -15,16 +15,21 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using FileZapper.Core.Engine;
+using System;
 
-namespace FileZapper
+namespace FileZapper.Core.Data
 {
-    class Program
+    public class ZapperSession
     {
-        static void Main(string[] args)
-        {
-            ZapperProcessor z = new ZapperProcessor();
-            z.StartConsole();
-        }
+        public Guid Id { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public int CurrentPhase { get; set; }
+        public int PhasesProcessed { get; set; }
+        public double RuntimeMS { get; set; }
+        public long FilesAdded { get; set; }
+        public long FilesHashed { get; set; }
+        public long FilesDeleted { get; set; }
+        public long TotalFilesProcessed { get; set; }
     }
 }
