@@ -15,16 +15,29 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using FileZapper.Core.Engine;
+using System;
 
-namespace FileZapper
+namespace FileZapper.Core.Data
 {
-    class Program
+    public class ZapperFileDeleted : ZapperFile
     {
-        static void Main(string[] args)
+        public DateTime DeletedDate { get; set; }
+        public Guid DeletedSessionId { get; set; }
+
+        public ZapperFileDeleted(ZapperFile zfile, Guid sessionId)
         {
-            ZapperProcessor z = new ZapperProcessor();
-            z.StartConsole();
+            DeletedDate = DateTime.Now;
+            DeletedSessionId = sessionId;
+            ContentHash = zfile.ContentHash;
+            Directory = zfile.Directory;
+            Extension = zfile.Extension;
+            FileModified = zfile.FileModified;
+            FullPath = zfile.FullPath;
+            HashTime = zfile.HashTime;
+            IsSystem = zfile.IsSystem;
+            Name = zfile.Name;
+            Score = zfile.Score;
+            Size = zfile.Size;
         }
     }
 }

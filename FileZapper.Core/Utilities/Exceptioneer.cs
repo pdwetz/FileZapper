@@ -15,16 +15,21 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using FileZapper.Core.Engine;
+using System;
+using FileZapper.Core.Data;
+using log4net;
 
-namespace FileZapper
+namespace FileZapper.Core.Utilities
 {
-    class Program
+    public class Exceptioneer
     {
-        static void Main(string[] args)
+        static public void Log(ILog log, Exception ex, string sMessage = null)
         {
-            ZapperProcessor z = new ZapperProcessor();
-            z.StartConsole();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("{0}: ERROR ******", DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine("For additional information, please see the log file.");
+            Console.ForegroundColor = ConsoleColor.White;
+            log.Error(sMessage ?? ex.Message, ex);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2012 Peter Wetzel
+    Copyright (C) 2013 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,12 +15,22 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-namespace FileZapper
+using System.Configuration;
+
+namespace FileZapper.Core.Configuration
 {
-    class ZapperFolder
+    public class ZapperFolderConfigElement : ConfigurationElement
     {
-        public string FullPath { get; set; }
-        public bool IsEnabled { get; set; }
-        public int Priority { get; set; }
+        [ConfigurationProperty("fullpath", IsRequired = true)]
+        public string FullPath
+        {
+            get { return this["fullpath"] as string; }
+        }
+
+        [ConfigurationProperty("priority", IsRequired = true)]
+        public int Priority
+        {
+            get { return (int)this["priority"]; }
+        }
     }
 }
