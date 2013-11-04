@@ -67,7 +67,9 @@ namespace FileZapper.Core.Engine
                                         throw new Exception("Unable to add deleted file to list: " + zfiledeleted.FullPath.ToString());
                                     }
                                 }
-                                else if (!ZapperProcessor.Settings.SkippedExtensions.Contains(zfile.Extension))
+                                else if (!ZapperProcessor.Settings.SkippedExtensions.Contains(zfile.Extension)
+                                    && zfile.Size > ZapperProcessor.Settings.IgnoreFilesBelowBytes
+                                    && (ZapperProcessor.Settings.IgnoreFilesOverBytes <= 0 || zfile.Size < ZapperProcessor.Settings.IgnoreFilesOverBytes))
                                 {
                                     if (!ZapperProcessor.ZapperFiles.TryAdd(zfile.FullPath, zfile))
                                     {
