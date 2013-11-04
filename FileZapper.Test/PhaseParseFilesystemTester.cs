@@ -37,12 +37,18 @@ namespace FileZapper.Test
             ZapperFileTestHelper.CreateTextFile(sKeeperFilePath, 5);
             string sUnwantedFilePath = Path.Combine(rootFolder.FullPath, "unwanted.foo");
             ZapperFileTestHelper.CreateTextFile(sUnwantedFilePath, 5);
+            string sSmallFilePath = Path.Combine(rootFolder.FullPath, "small.txt");
+            ZapperFileTestHelper.CreateTextFile(sSmallFilePath, 1);
+            string sLargeFilePath = Path.Combine(rootFolder.FullPath, "large.txt");
+            ZapperFileTestHelper.CreateTextFile(sLargeFilePath, 10);
 
             FileZapperSettings settings = new FileZapperSettings();
             settings.UnwantedExtensions = new string[] { ".foo" };
             List<ZapperFolder> folders = new List<ZapperFolder>();
             folders.Add(rootFolder);
             settings.RootFolders = folders;
+            settings.IgnoreFilesBelowBytes = 1000;
+            settings.IgnoreFilesOverBytes = 3000;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();
             var phase = new PhaseParseFilesystem { PhaseOrder = 1, IsInitialPhase = true };
@@ -52,6 +58,8 @@ namespace FileZapper.Test
             phase.Process();
             Assert.IsTrue(File.Exists(sKeeperFilePath));
             Assert.IsTrue(!File.Exists(sUnwantedFilePath));
+            Assert.IsTrue(!File.Exists(sSmallFilePath));
+            Assert.IsTrue(!File.Exists(sLargeFilePath));
             Assert.AreEqual(1, processor.ZapperFiles.Count);
             Assert.AreEqual(1, processor.ZapperFilesDeleted.Count);
         }
