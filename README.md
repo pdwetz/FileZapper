@@ -1,8 +1,7 @@
 FileZapper
 ==============
 
-Finds and removed duplicate files
---------------
+Finds and removes duplicate files. For a simplistic python port, see PyFileZapper (https://github.com/pdwetz/PyFileZapper).
 
 This was primarily a project to scratch an itch of mine and isn't particularly meant for mass consumption. While the initial release utilized a SQL server instance for tracking changes and doing the core set-based operations, the upgraded version has no data store ties at all. Everything is processed in memory with the results dumped into CSV files for review.
 
