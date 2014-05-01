@@ -60,6 +60,9 @@
     <Compile Include="Data\ZapperSessionPhase.cs" />
     <Compile Include="Data\ZapperFileDeleted.cs" />
     <Compile Include="Data\ZapperSession.cs" />
+    <Compile Include="Engine\FileZapperRemoveFromDictionaryFailureException.cs" />
+    <Compile Include="Engine\FileZapperUpdateDictionaryFailureException.cs" />
+    <Compile Include="Engine\FileZapperAddToDictionaryFailureException.cs" />
     <Compile Include="Engine\IZapperPhase.cs" />
     <Compile Include="Engine\PhaseCalculateHashes.cs" />
     <Compile Include="Engine\PhaseCleanup.cs" />

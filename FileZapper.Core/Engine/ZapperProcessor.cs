@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2013 Peter Wetzel
+    Copyright (C) 2014 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Specialized;
 using System.Linq;
 using FileZapper.Core.Configuration;
 using FileZapper.Core.Data;
@@ -75,7 +77,7 @@ namespace FileZapper.Core.Engine
             try
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("FileZapper   Copyright (C) 2013 Peter Wetzel");
+                Console.WriteLine("FileZapper   Copyright (C) 2014 Peter Wetzel");
                 Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; for details see license.txt.");
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Current configuration settings...");
@@ -166,7 +168,8 @@ namespace FileZapper.Core.Engine
                 sFilePath = Path.Combine(sPath, string.Format("files-{0}.csv", _zapperSession.Id));
                 using (var csv = new CsvWriter(new StreamWriter(sFilePath)))
                 {
-                    csv.WriteRecords(ZapperFiles.Values);
+                    var records = (IEnumerable)ZapperFiles.Values;
+                    csv.WriteRecords(records);
                 }
             }
             if (ZapperFilesDeleted.Count > 0)
@@ -174,7 +177,8 @@ namespace FileZapper.Core.Engine
                 sFilePath = Path.Combine(sPath, string.Format("deleted-{0}.csv", _zapperSession.Id));
                 using (var csv = new CsvWriter(new StreamWriter(sFilePath)))
                 {
-                    csv.WriteRecords(ZapperFilesDeleted.Values);
+                    var records = (IEnumerable)ZapperFilesDeleted.Values;
+                    csv.WriteRecords(records);
                 }
             }
             return sPath;
