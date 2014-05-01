@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2013 Peter Wetzel
+    Copyright (C) 2014 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ namespace FileZapper.Core.Engine
 
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
-                    throw new Exception("Unable to update file list: " + zfile.FullPath.ToString());
+                    throw new FileZapperUpdateDictionaryFailureException("ZapperFiles", zfile.FullPath);
                 }
             }
             catch (Exception ex)
@@ -110,7 +110,7 @@ namespace FileZapper.Core.Engine
                 zfile.ContentHash = "INVALID";
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
-                    throw new Exception("Unable to update file list: " + zfile.FullPath.ToString());
+                    throw new FileZapperUpdateDictionaryFailureException("ZapperFiles", zfile.FullPath);
                 }
             }
         }
