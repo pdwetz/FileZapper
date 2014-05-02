@@ -57,9 +57,7 @@ namespace FileZapper.Test
             var processor = new ZapperProcessor(settings, allphases);
             phase.Process();
             Assert.IsTrue(File.Exists(sKeeperFilePath));
-            Assert.IsTrue(!File.Exists(sUnwantedFilePath));
-            Assert.IsTrue(!File.Exists(sSmallFilePath));
-            Assert.IsTrue(!File.Exists(sLargeFilePath));
+            Assert.IsFalse(File.Exists(sUnwantedFilePath));
             Assert.AreEqual(1, processor.ZapperFiles.Count);
             Assert.AreEqual(1, processor.ZapperFilesDeleted.Count);
         }
