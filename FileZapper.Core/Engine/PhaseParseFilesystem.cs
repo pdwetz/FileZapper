@@ -28,7 +28,7 @@ namespace FileZapper.Core.Engine
 {
     public class PhaseParseFilesystem : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger("PhaseParseFilesystem");
+        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseParseFilesystem));
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
         public string Name { get; set; }
@@ -36,11 +36,12 @@ namespace FileZapper.Core.Engine
 
         public PhaseParseFilesystem()
         {
-            Name = "Save file system info to database";
+            Name = "Parse file system";
         }
 
         public void Process()
         {
+            _log.Info(Name);
             foreach (var root in ZapperProcessor.Settings.RootFolders)
             {
                 Console.WriteLine("{0}: Parsing folder {1}", DateTime.Now.ToString("HH:mm:ss.fff"), root.FullPath);

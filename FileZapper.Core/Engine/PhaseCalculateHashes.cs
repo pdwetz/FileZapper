@@ -29,7 +29,7 @@ namespace FileZapper.Core.Engine
 {
     public class PhaseCalculateHashes : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger("PhaseCalculateHashes");
+        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseCalculateHashes));
 
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
@@ -38,18 +38,18 @@ namespace FileZapper.Core.Engine
 
         public PhaseCalculateHashes()
         {
-            Name = "Calculate hashes (this may take awhile)";
+            Name = "Calculate content hashes (this may take awhile)";
         }
 
         public void Process()
         {
+            _log.Info(Name);
+            // TODO Test perf of parallelism here; since it's I/O bound, should we make it more aware of different disks being checked?
             var possibleDupes = 
                 (from z in ZapperProcessor.ZapperFiles.Values
-                group z by new { z.Size, z.Extension } into g
+                group z by new { z.Size, z.Extension, z.SampleHash } into g
                 select new { ContentHash = g.Key, Count = g.Count(), Files = g })
                 .Where(x => x.Count > 1);
-
-            // TODO Test perf of parallelism here; since it's I/O bound, should we make it more aware of different disks being checked?
 
             // Parallelism explicitly limited, as default setting was causing hundreds of threads to be created and killed machine performance.
             // Instead, we're simply using the logical processor count (including physical cores and hyperthreading)
@@ -58,7 +58,6 @@ namespace FileZapper.Core.Engine
             Parallel.ForEach(possibleDupes, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, dupeGroup =>
             //Parallel.ForEach(Partitioner.Create(files, EnumerablePartitionerOptions.NoBuffering), new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, hashfile =>
             {
-                // TODO Pulled logic from removal phase, which had issues trying to parallelize this inner loop along with the outer one
                 foreach (var zfile in dupeGroup.Files)
                 {
                     Hashify(zfile);

@@ -27,7 +27,7 @@ namespace FileZapper.Core.Engine
 {
     public class PhaseCleanup : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger("PhaseCleanup");
+        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseCleanup));
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
         public string Name { get; set; }
@@ -40,6 +40,8 @@ namespace FileZapper.Core.Engine
 
         public void Process()
         {
+            _log.Info(Name);
+
             if (ZapperProcessor == null) { throw new Exception("ZapperProcessor required"); }
             if (ZapperProcessor.Settings == null) { throw new Exception("ZapperProcessor.Settings required"); }
             if (ZapperProcessor.Settings.UnwantedFolders == null) { throw new Exception("ZapperProcessor.Settings.UnwantedFolders required"); }

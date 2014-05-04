@@ -31,7 +31,7 @@ namespace FileZapper.Core.Engine
     /// </summary>
     public class PhaseRemoveDuplicates : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger("PhaseRemoveDuplicates");
+        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseRemoveDuplicates));
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
         public string Name { get; set; }
@@ -44,6 +44,7 @@ namespace FileZapper.Core.Engine
 
         public void Process()
         {
+            _log.Info(Name);
             var files = ZapperProcessor.ZapperFiles.Values.Where(x => !string.IsNullOrWhiteSpace(x.ContentHash) && !x.ContentHash.Equals("invalid", StringComparison.InvariantCultureIgnoreCase));
             Console.WriteLine("{0}: Calc file scores", DateTime.Now.ToString("HH:mm:ss.fff"));
             try

@@ -4,13 +4,15 @@
 [assembly: AssemblyDescription("Finds and removes duplicate files from specified folders")]
 [assembly: AssemblyProduct("FileZapper")]
 [assembly: AssemblyCopyright("Copyright © 2014 Peter Wetzel")]
+[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
-[assembly: AssemblyVersion("2.0.1.0")]
-[assembly: AssemblyFileVersion("2.0.1.0")]
+[assembly: AssemblyVersion("2.1.0.0")]
+[assembly: AssemblyFileVersion("2.1.0.0")]
 /*
- * Version 2.0.1.0
+ * Version 2.1.0.0
  * - Added custom exceptions
- * - Updated CSV code for obsolete methods in library
+ * - Added new phase to do hashes on small samples of possible file matches
+ * - Fixed logging
  * Version 2.0.0.0
  * - Updated to .NET 4.5 framework
  * - Logic pulled into new library assembly

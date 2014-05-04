@@ -23,7 +23,8 @@ namespace FileZapper.Test
 {
     public static class ZapperFileTestHelper
     {
-        private const string FillerText = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n";
+        public const string FillerText = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n";
+        public const string AltFillerText = "Zim zam a dap to tip. Zoom zip, a boom bip. Nada foo bar ah me to doom. Nah do goo pah be rema, zay kew quin hew. Trim sach min wrun. Priny hun foos be tix wun, nie fut as drun pool ret unvon cin. Gree fin hun tintu. Frew sa lin unt vip trebl saed carni jin pog un traem vin asdrtync. Hun in tun run eun aun in. Drun a ne app pro mainwin wern add loops quiy drux. Seeb han chu ke triv bee hi lik paj frim, dree cripfug nium tree add see nah me.\n";
 
         public static ZapperFolder GetTestFileRoot()
         {
@@ -54,7 +55,7 @@ namespace FileZapper.Test
             return sPath;
         }
 
-        public static void CreateTextFile(string sFilePath, long fillerlines)
+        public static void CreateTextFile(string sFilePath, long fillerlines, string sFillerText = FillerText)
         {
             if (File.Exists(sFilePath))
             {
@@ -64,7 +65,7 @@ namespace FileZapper.Test
             {
                 for (long i = 0; i < fillerlines; i++)
                 {
-                    stream.Write(FillerText);
+                    stream.Write(sFillerText);
                 }
                 stream.Flush();
             }

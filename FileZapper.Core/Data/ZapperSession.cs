@@ -31,5 +31,6 @@ namespace FileZapper.Core.Data
         public long FilesHashed { get; set; }
         public long FilesDeleted { get; set; }
         public long TotalFilesProcessed { get; set; }
+        public long FilesSampled { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace FileZapper.Core.Engine
 {
     public class ZapperProcessor
     {
-        private readonly ILog _log = LogManager.GetLogger("ZapperProcessor");
+        private readonly ILog _log = LogManager.GetLogger(typeof(ZapperProcessor));
 
         public ConcurrentDictionary<string, ZapperFile> ZapperFiles { get; set; }
         public ConcurrentDictionary<string, ZapperFileDeleted> ZapperFilesDeleted { get; set; }
@@ -46,6 +46,8 @@ namespace FileZapper.Core.Engine
 
         public ZapperProcessor(FileZapperSettings settings = null, IList<IZapperPhase> phases = null)
         {
+            _log.Info("Initializing");
+
             ZapperFiles = new ConcurrentDictionary<string, ZapperFile>();
             ZapperFilesDeleted = new ConcurrentDictionary<string, ZapperFileDeleted>();
 
@@ -66,8 +68,9 @@ namespace FileZapper.Core.Engine
                 List<IZapperPhase> allphases = new List<IZapperPhase>();
                 allphases.Add(new PhaseCleanup { PhaseOrder = 1, ZapperProcessor = this, IsInitialPhase = true });
                 allphases.Add(new PhaseParseFilesystem { PhaseOrder = 2, ZapperProcessor = this });
-                allphases.Add(new PhaseCalculateHashes { PhaseOrder = 3, ZapperProcessor = this });
-                allphases.Add(new PhaseRemoveDuplicates { PhaseOrder = 4, ZapperProcessor = this });
+                allphases.Add(new PhaseCalculateSamples { PhaseOrder = 3, ZapperProcessor = this });
+                allphases.Add(new PhaseCalculateHashes { PhaseOrder = 4, ZapperProcessor = this });
+                allphases.Add(new PhaseRemoveDuplicates { PhaseOrder = 5, ZapperProcessor = this });
                 _phases = allphases.OrderBy(x => x.PhaseOrder);
             }
         }
@@ -117,6 +120,7 @@ namespace FileZapper.Core.Engine
         {
             try
             {
+                _log.Info("Processing");
                 _zapperSession.StartDate = DateTime.Now;
                 var phases = _phases.Where(x => x.PhaseOrder >= _zapperSession.CurrentPhase);
                 foreach (var phase in phases)
@@ -133,14 +137,16 @@ namespace FileZapper.Core.Engine
             }
             finally
             {
+                _log.Info("Done");
                 _zapperSession.EndDate = DateTime.Now;
                 _zapperSession.RuntimeMS = (_zapperSession.EndDate.Value - _zapperSession.StartDate).TotalMilliseconds;
                 _zapperSession.FilesAdded = ZapperFiles.Count;
+                _zapperSession.FilesSampled = ZapperFiles.Values.Count(x => !string.IsNullOrWhiteSpace(x.SampleHash));
                 _zapperSession.FilesHashed = ZapperFiles.Values.Count(x => !string.IsNullOrWhiteSpace(x.ContentHash));
                 _zapperSession.FilesDeleted = ZapperFilesDeleted.Count;
                 _zapperSession.TotalFilesProcessed = _zapperSession.FilesAdded + _zapperSession.FilesDeleted;
+                LogResults();
             }
-            LogResults();
         }
 
         public string LogResults()
@@ -166,19 +172,23 @@ namespace FileZapper.Core.Engine
             if (ZapperFiles.Count > 0)
             {
                 sFilePath = Path.Combine(sPath, string.Format("files-{0}.csv", _zapperSession.Id));
-                using (var csv = new CsvWriter(new StreamWriter(sFilePath)))
+                using (var textWriter = File.CreateText(sFilePath))
                 {
-                    var records = (IEnumerable)ZapperFiles.Values;
-                    csv.WriteRecords(records);
+                    using (var writer = new CsvWriter(textWriter))
+                    {
+                        writer.WriteRecords(ZapperFiles.Values);
+                    }
                 }
             }
             if (ZapperFilesDeleted.Count > 0)
             {
                 sFilePath = Path.Combine(sPath, string.Format("deleted-{0}.csv", _zapperSession.Id));
-                using (var csv = new CsvWriter(new StreamWriter(sFilePath)))
+                using (var textWriter = File.CreateText(sFilePath))
                 {
-                    var records = (IEnumerable)ZapperFilesDeleted.Values;
-                    csv.WriteRecords(records);
+                    using (var writer = new CsvWriter(textWriter))
+                    {
+                        writer.WriteRecords(ZapperFilesDeleted.Values);
+                    }
                 }
             }
             return sPath;
