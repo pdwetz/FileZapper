@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
@@ -57,13 +59,15 @@
     <Compile Include="Configuration\ZapperFolderConfigElement.cs" />
     <Compile Include="Configuration\ZapperFolderConfigSection.cs" />
     <Compile Include="Configuration\FileZapperSettings.cs" />
+    <Compile Include="Data\ZapperFileMap.cs" />
     <Compile Include="Data\ZapperSessionPhase.cs" />
     <Compile Include="Data\ZapperFileDeleted.cs" />
     <Compile Include="Data\ZapperSession.cs" />
-    <Compile Include="Engine\FileZapperRemoveFromDictionaryFailureException.cs" />
-    <Compile Include="Engine\FileZapperUpdateDictionaryFailureException.cs" />
-    <Compile Include="Engine\FileZapperAddToDictionaryFailureException.cs" />
+    <Compile Include="Exceptions\FileZapperRemoveFromDictionaryFailureException.cs" />
+    <Compile Include="Exceptions\FileZapperUpdateDictionaryFailureException.cs" />
+    <Compile Include="Exceptions\FileZapperAddToDictionaryFailureException.cs" />
     <Compile Include="Engine\IZapperPhase.cs" />
+    <Compile Include="Engine\PhaseCalculateSamples.cs" />
     <Compile Include="Engine\PhaseCalculateHashes.cs" />
     <Compile Include="Engine\PhaseCleanup.cs" />
     <Compile Include="Engine\PhaseParseFilesystem.cs" />
@@ -72,6 +76,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\ZapperFile.cs" />
     <Compile Include="Data\ZapperFolder.cs" />
+    <Compile Include="Utilities\ByteCompare.cs" />
     <Compile Include="Utilities\Crc32.cs" />
     <Compile Include="Utilities\Exceptioneer.cs" />
   </ItemGroup>

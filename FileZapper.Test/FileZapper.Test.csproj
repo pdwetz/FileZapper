@@ -58,6 +58,7 @@
     <Compile Include="ParseFileSystemTester.cs" />
     <Compile Include="PhaseParseFilesystemTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PhaseCalculateSamplesTester.cs" />
     <Compile Include="SettingsTester.cs" />
     <Compile Include="ZapperFileTestHelper.cs" />
     <Compile Include="ZapperProcessorTester.cs" />

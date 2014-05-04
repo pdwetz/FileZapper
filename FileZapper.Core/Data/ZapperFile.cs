@@ -17,11 +17,15 @@
 */
 using System;
 using System.IO;
+using FileZapper.Core.Utilities;
 
 namespace FileZapper.Core.Data
 {
     public class ZapperFile : IEquatable<ZapperFile>
     {
+        public const int DefaultSampleBytesOffset = 10240;
+        public const int DefaultSampleBytesSize = 1024;
+
         public string FullPath { get; set; }
         public string Name { get; set; }
         public string ContentHash { get; set; }
@@ -32,10 +36,18 @@ namespace FileZapper.Core.Data
         public long HashTime { get; set; }
         public bool IsSystem { get; set; }
         public int Score { get; set; }
+        public int SampleBytesOffset { get; set; }
+        public int SampleBytesSize { get; set; }
+        public string SampleHash { get; set; }
 
-        public ZapperFile() { }
+        public ZapperFile()
+        {
+            SampleBytesOffset = DefaultSampleBytesOffset;
+            SampleBytesSize = DefaultSampleBytesSize;
+        }
 
         public ZapperFile(string sFilePath)
+            : this()
         {
             FullPath = sFilePath;
             LoadFileSystemInfo();
@@ -54,6 +66,11 @@ namespace FileZapper.Core.Data
             Extension = f.Extension.ToLower();
             Size = f.Length;
             FileModified = f.LastWriteTime;
+            if (Size < (SampleBytesOffset + SampleBytesSize))
+            {
+                SampleBytesOffset = 0;
+                SampleBytesSize = (int)Size;
+            }
         }
 
         public bool Equals(ZapperFile other)
