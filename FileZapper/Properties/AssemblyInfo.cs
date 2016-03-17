@@ -3,11 +3,11 @@
 [assembly: AssemblyTitle("FileZapper")]
 [assembly: AssemblyDescription("Finds and removes duplicate files from specified folders")]
 [assembly: AssemblyProduct("FileZapper")]
-[assembly: AssemblyCopyright("Copyright © 2014 Peter Wetzel")]
+[assembly: AssemblyCopyright("Copyright © 2016 Peter Wetzel")]
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
-[assembly: AssemblyVersion("2.1.0.0")]
-[assembly: AssemblyFileVersion("2.1.0.0")]
+[assembly: AssemblyVersion("2.2.0.0")]
+[assembly: AssemblyFileVersion("2.2.0.0")]
 /*
  * Version 2.1.0.0
  * - Added custom exceptions

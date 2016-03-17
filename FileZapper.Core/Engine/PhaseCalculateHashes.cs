@@ -47,6 +47,7 @@ namespace FileZapper.Core.Engine
             // TODO Test perf of parallelism here; since it's I/O bound, should we make it more aware of different disks being checked?
             var possibleDupes = 
                 (from z in ZapperProcessor.ZapperFiles.Values
+                where z.SampleHash != null
                 group z by new { z.Size, z.Extension, z.SampleHash } into g
                 select new { ContentHash = g.Key, Count = g.Count(), Files = g })
                 .Where(x => x.Count > 1);

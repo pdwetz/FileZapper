@@ -24,6 +24,7 @@ namespace FileZapper.Core.Configuration
 {
     public class FileZapperSettings
     {
+        public bool DupeCheckIgnoresHierarchy { get; set; }
         public long IgnoreFilesBelowBytes { get; set; }
         public long IgnoreFilesOverBytes { get; set; }
         public string[] SkippedExtensions { get; set; }
@@ -46,6 +47,7 @@ namespace FileZapper.Core.Configuration
             {
                 throw new Exception("FileZapper config section missing");
             }
+            DupeCheckIgnoresHierarchy = _config.DupeCheckIgnoresHierarchy;
             IgnoreFilesBelowBytes = _config.IgnoreFilesBelowBytes;
             IgnoreFilesOverBytes = _config.IgnoreFilesOverBytes;
             SkippedExtensions = (_config.SkippedExtensions ?? "").Split(new char[] { ',' });

@@ -80,7 +80,7 @@ namespace FileZapper.Core.Engine
             try
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("FileZapper   Copyright (C) 2014 Peter Wetzel");
+                Console.WriteLine("FileZapper   Copyright (C) 2016 Peter Wetzel");
                 Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; for details see license.txt.");
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Current configuration settings...");
