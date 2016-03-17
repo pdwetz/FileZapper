@@ -68,9 +68,141 @@ namespace FileZapper.Test
             phase.Process();
 
             Assert.AreEqual(3, processor.ZapperFiles.Count);
-            Assert.IsNotNullOrEmpty(files[0].SampleHash);
+            Assert.That(files[0].SampleHash, Is.Not.Null.And.Not.Empty);
             Assert.AreEqual(files[0].SampleHash, files[1].SampleHash);
-            Assert.IsNullOrEmpty(files[2].SampleHash);
+            Assert.That(files[2].SampleHash, Is.Null.Or.Empty);
+        }
+
+        [Test]
+        public void process_folders_ignorehierarchy()
+        {
+            var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateSamplesTester");
+            System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
+
+            var alphaFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Alpha");
+            var bravoFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Bravo");
+
+            List<ZapperFile> files = new List<ZapperFile>();
+
+            string sFilePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
+            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
+            var alpha = new ZapperFile(sFilePath);
+            files.Add(alpha);
+
+            sFilePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
+            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
+            var bravo = new ZapperFile(sFilePath);
+            files.Add(bravo);
+
+            FileZapperSettings settings = new FileZapperSettings();
+            List<ZapperFolder> folders = new List<ZapperFolder>();
+            folders.Add(rootFolder);
+            settings.RootFolders = folders;
+
+            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var phase = new PhaseCalculateSamples { PhaseOrder = 1, IsInitialPhase = true };
+            allphases.Add(phase);
+
+            var processor = new ZapperProcessor(settings, allphases);
+            foreach (var zfile in files)
+            {
+                Assert.IsTrue(processor.ZapperFiles.TryAdd(zfile.FullPath, zfile));
+            }
+
+            settings.DupeCheckIgnoresHierarchy = true;
+            phase.Process();
+            Assert.AreEqual(2, processor.ZapperFiles.Count);
+            Assert.That(files[0].SampleHash, Is.Not.Null.And.Not.Empty);
+            Assert.AreEqual(files[0].SampleHash, files[1].SampleHash);
+        }
+
+        [Test]
+        public void process_folders_hierarchyonly_singleroot()
+        {
+            var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateSamplesTester");
+            System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
+
+            var alphaFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Alpha");
+            var bravoFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Bravo");
+
+            List<ZapperFile> files = new List<ZapperFile>();
+
+            string sFilePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
+            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
+            var alpha = new ZapperFile(sFilePath);
+            files.Add(alpha);
+
+            sFilePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
+            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
+            var bravo = new ZapperFile(sFilePath);
+            files.Add(bravo);
+
+            FileZapperSettings settings = new FileZapperSettings();
+            List<ZapperFolder> folders = new List<ZapperFolder>();
+            folders.Add(rootFolder);
+            settings.RootFolders = folders;
+
+            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var phase = new PhaseCalculateSamples { PhaseOrder = 1, IsInitialPhase = true };
+            allphases.Add(phase);
+
+            var processor = new ZapperProcessor(settings, allphases);
+            foreach (var zfile in files)
+            {
+                Assert.IsTrue(processor.ZapperFiles.TryAdd(zfile.FullPath, zfile));
+            }
+
+            settings.DupeCheckIgnoresHierarchy = false;
+            phase.Process();
+            Assert.AreEqual(2, processor.ZapperFiles.Count);
+            Assert.That(files[0].SampleHash, Is.Null.Or.Empty);
+            Assert.That(files[1].SampleHash, Is.Null.Or.Empty);
+        }
+
+        [Test]
+        public void process_folders_hierarchyonly_multiroot()
+        {
+            var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateSamplesTester");
+            System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
+
+            var alphaFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Alpha");
+            alphaFolder.Priority = 300000;
+            var bravoFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Bravo");
+            bravoFolder.Priority = 100000;
+
+            List<ZapperFile> files = new List<ZapperFile>();
+
+            string sFilePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
+            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
+            var alpha = new ZapperFile(sFilePath);
+            files.Add(alpha);
+
+            sFilePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
+            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
+            var bravo = new ZapperFile(sFilePath);
+            files.Add(bravo);
+
+            FileZapperSettings settings = new FileZapperSettings();
+            List<ZapperFolder> folders = new List<ZapperFolder>();
+            folders.Add(alphaFolder);
+            folders.Add(bravoFolder);
+            settings.RootFolders = folders;
+
+            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var phase = new PhaseCalculateSamples { PhaseOrder = 1, IsInitialPhase = true };
+            allphases.Add(phase);
+
+            var processor = new ZapperProcessor(settings, allphases);
+            foreach (var zfile in files)
+            {
+                Assert.IsTrue(processor.ZapperFiles.TryAdd(zfile.FullPath, zfile));
+            }
+
+            settings.DupeCheckIgnoresHierarchy = false;
+            phase.Process();
+            Assert.AreEqual(2, processor.ZapperFiles.Count);
+            Assert.That(files[0].SampleHash, Is.Null.Or.Empty);
+            Assert.That(files[1].SampleHash, Is.Null.Or.Empty);
         }
     }
 }

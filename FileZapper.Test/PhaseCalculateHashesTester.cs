@@ -28,25 +28,19 @@ namespace FileZapper.Test
     public class PhaseCalculateHashesTester
     {
         [Test]
-        public void process()
+        public void matching_files()
         {
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateHashesTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
             List<ZapperFile> files = new List<ZapperFile>();
             string sFilePath = Path.Combine(rootFolder.FullPath, "alpha.txt");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt" });
+            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt", SampleHash = "1" });
             ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
 
             sFilePath = Path.Combine(rootFolder.FullPath, "bravo.txt");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt" });
+            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt", SampleHash = "1" });
             ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
-
-            sFilePath = Path.Combine(rootFolder.FullPath, "charlie.txt");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 999, Extension = ".txt" });
-
-            sFilePath = Path.Combine(rootFolder.FullPath, "delta.foo");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 999, Extension = ".foo" });
 
             FileZapperSettings settings = new FileZapperSettings();
             List<ZapperFolder> folders = new List<ZapperFolder>();
@@ -65,11 +59,83 @@ namespace FileZapper.Test
             
             phase.Process();
 
-            Assert.AreEqual(4, processor.ZapperFiles.Count);
-            Assert.IsNotNullOrEmpty(files[0].ContentHash);
+            Assert.AreEqual(2, processor.ZapperFiles.Count);
+            Assert.That(files[0].ContentHash, Is.Not.Null.And.Not.Empty);
+            Assert.That(files[1].ContentHash, Is.Not.Null.And.Not.Empty);
             Assert.AreEqual(files[0].ContentHash, files[1].ContentHash);
-            Assert.IsNullOrEmpty(files[2].ContentHash);
-            Assert.IsNullOrEmpty(files[3].ContentHash);
+        }
+
+        [Test]
+        public void different_extensions_same_content()
+        {
+            var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateHashesTester");
+            System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
+
+            List<ZapperFile> files = new List<ZapperFile>();
+
+            string sFilePath = Path.Combine(rootFolder.FullPath, "charlie.txt");
+            files.Add(new ZapperFile { FullPath = sFilePath, Size = 999, Extension = ".txt", SampleHash = "2" });
+
+            sFilePath = Path.Combine(rootFolder.FullPath, "delta.foo");
+            files.Add(new ZapperFile { FullPath = sFilePath, Size = 999, Extension = ".foo", SampleHash = "2" });
+
+            FileZapperSettings settings = new FileZapperSettings();
+            List<ZapperFolder> folders = new List<ZapperFolder>();
+            folders.Add(rootFolder);
+            settings.RootFolders = folders;
+
+            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var phase = new PhaseCalculateHashes { PhaseOrder = 1, IsInitialPhase = true };
+            allphases.Add(phase);
+
+            var processor = new ZapperProcessor(settings, allphases);
+            foreach (var zfile in files)
+            {
+                Assert.IsTrue(processor.ZapperFiles.TryAdd(zfile.FullPath, zfile));
+            }
+
+            phase.Process();
+
+            Assert.AreEqual(2, processor.ZapperFiles.Count);
+            Assert.That(files[0].ContentHash, Is.Null.Or.Empty);
+            Assert.That(files[1].ContentHash, Is.Null.Or.Empty);
+        }
+
+        [Test]
+        public void empty_sample_hashes()
+        {
+            var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateHashesTester");
+            System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
+
+            List<ZapperFile> files = new List<ZapperFile>();
+            string sFilePath = Path.Combine(rootFolder.FullPath, "alpha.txt");
+            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt" });
+            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
+
+            sFilePath = Path.Combine(rootFolder.FullPath, "bravo.txt");
+            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt" });
+            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
+
+            FileZapperSettings settings = new FileZapperSettings();
+            List<ZapperFolder> folders = new List<ZapperFolder>();
+            folders.Add(rootFolder);
+            settings.RootFolders = folders;
+
+            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var phase = new PhaseCalculateHashes { PhaseOrder = 1, IsInitialPhase = true };
+            allphases.Add(phase);
+
+            var processor = new ZapperProcessor(settings, allphases);
+            foreach (var zfile in files)
+            {
+                Assert.IsTrue(processor.ZapperFiles.TryAdd(zfile.FullPath, zfile));
+            }
+
+            phase.Process();
+
+            Assert.AreEqual(2, processor.ZapperFiles.Count);
+            Assert.That(files[0].ContentHash, Is.Null.Or.Empty);
+            Assert.That(files[1].ContentHash, Is.Null.Or.Empty);
         }
     }
 }

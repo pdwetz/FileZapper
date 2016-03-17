@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("FileZapper.Test")]
 [assembly: AssemblyDescription("Finds and removes duplicate files from specified folders")]
 [assembly: AssemblyProduct("FileZapper")]
-[assembly: AssemblyCopyright("Copyright © 2014 Peter Wetzel")]
+[assembly: AssemblyCopyright("Copyright © 2016 Peter Wetzel")]
 
 [assembly: ComVisible(false)]
 [assembly: Guid("bad1b3f8-92b1-49c9-a5e8-cb20a15ef804")]
 
-[assembly: AssemblyVersion("2.1.0.0")]
-[assembly: AssemblyFileVersion("2.1.0.0")]
+[assembly: AssemblyVersion("2.2.0.0")]
+[assembly: AssemblyFileVersion("2.2.0.0")]
 /*
  * Version 2.1.0.0
  * - Added custom exceptions

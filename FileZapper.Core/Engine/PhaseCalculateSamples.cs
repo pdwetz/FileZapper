@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -44,19 +43,38 @@ namespace FileZapper.Core.Engine
         public void Process()
         {
             _log.Info(Name);
-            var possibleDupes = 
-                (from z in ZapperProcessor.ZapperFiles.Values
-                group z by new { z.Size, z.Extension } into g
-                select new { ContentHash = g.Key, Count = g.Count(), Files = g })
-                .Where(x => x.Count > 1);
-
-            Parallel.ForEach(possibleDupes, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, dupeGroup =>
+            if (ZapperProcessor.Settings.DupeCheckIgnoresHierarchy)
             {
-                foreach (var zfile in dupeGroup.Files)
+                var possibleDupes =
+                    (from z in ZapperProcessor.ZapperFiles.Values
+                     group z by new { z.Size, z.Extension } into g
+                     select new { ContentHash = g.Key, Count = g.Count(), Files = g })
+                    .Where(x => x.Count > 1);
+
+                Parallel.ForEach(possibleDupes, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, dupeGroup =>
                 {
-                    Hashify(zfile);
-                }
-            });
+                    foreach (var zfile in dupeGroup.Files)
+                    {
+                        Hashify(zfile);
+                    }
+                });
+            }
+            else
+            {
+                var possibleDupes =
+                    (from z in ZapperProcessor.ZapperFiles.Values
+                     group z by new { z.Directory, z.Size } into g
+                     select new { ContentHash = g.Key, Count = g.Count(), Files = g })
+                    .Where(x => x.Count > 1);
+
+                Parallel.ForEach(possibleDupes, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, dupeGroup =>
+                {
+                    foreach (var zfile in dupeGroup.Files)
+                    {
+                        Hashify(zfile);
+                    }
+                });
+            }
         }
 
         public void Hashify(ZapperFile zfile)
@@ -78,7 +96,7 @@ namespace FileZapper.Core.Engine
                         stream.Read(buffer, 0, zfile.SampleBytesSize);
                         hashvalue = hasher.ComputeHash(buffer);
                     }
-                    zfile.SampleHash = System.BitConverter.ToString(hashvalue);
+                    zfile.SampleHash = BitConverter.ToString(hashvalue);
                 }
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
