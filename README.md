@@ -20,6 +20,14 @@ Planned work (mostly TODO's in the code) with no real time table:
 
 #Release Notes#
 
+Version 2.2.0.0
+- Added new boolean setting "DupeCheckIgnoresHierarchy" to help speed up process; now by default will only sample hashes from same folder.
+- Bug fix: full hashing algorithm now properly skips files with no sample hash
+- Now targets .NET framework v4.6.1 (was v4.5)
+- Nuget update
+- Updated tests to be compatible with v3 of NUnit
+- Added and refined tests
+
 Version 2.1.0.0
 - Added custom exceptions
 - Added new phase to do hashes on small samples of possible file matches
