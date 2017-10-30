@@ -3,12 +3,23 @@
 [assembly: AssemblyTitle("FileZapper")]
 [assembly: AssemblyDescription("Finds and removes duplicate files from specified folders")]
 [assembly: AssemblyProduct("FileZapper")]
-[assembly: AssemblyCopyright("Copyright © 2016 Peter Wetzel")]
+[assembly: AssemblyCopyright("Copyright © 2017 Peter Wetzel")]
 [assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
-[assembly: AssemblyVersion("2.2.0.0")]
-[assembly: AssemblyFileVersion("2.2.0.0")]
+[assembly: AssemblyVersion("2.2.1.0")]
+[assembly: AssemblyFileVersion("2.2.1.0")]
 /*
+ * Version 2.2.1.0
+ * - Now targets .NET framework v4.7
+ * - Nugets updated
+ * - Minor string handling changes
+ * Version 2.2.0.0
+ * - Added new boolean setting "DupeCheckIgnoresHierarchy" to help speed up process; now by default will only sample hashes from same folder.
+ * - Bug fix: full hashing algorithm now properly skips files with no sample hash
+ * - Now targets .NET framework v4.6.1 (was v4.5)
+ * - Nuget update
+ * - Updated tests to be compatible with v3 of NUnit
+ * - Added and refined tests
  * Version 2.1.0.0
  * - Added custom exceptions
  * - Added new phase to do hashes on small samples of possible file matches

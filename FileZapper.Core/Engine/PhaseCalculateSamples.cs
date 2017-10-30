@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2017 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -105,7 +105,7 @@ namespace FileZapper.Core.Engine
             }
             catch (Exception ex)
             {
-                Exceptioneer.Log(_log, ex, "Due to error, file tagged with INVALID sample hash: " + zfile.FullPath);
+                Exceptioneer.Log(_log, ex, $"Due to error, file tagged with INVALID sample hash: {zfile.FullPath}");
                 zfile.SampleHash = "INVALID";
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
