@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2017 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -45,8 +45,9 @@ namespace FileZapper.Core.Engine
         public void Process()
         {
             _log.Info(Name);
-            var files = ZapperProcessor.ZapperFiles.Values.Where(x => !string.IsNullOrWhiteSpace(x.ContentHash) && !x.ContentHash.Equals("invalid", StringComparison.InvariantCultureIgnoreCase));
-            Console.WriteLine("{0}: Calc file scores", DateTime.Now.ToString("HH:mm:ss.fff"));
+            var files = ZapperProcessor.ZapperFiles.Values
+                .Where(x => !string.IsNullOrWhiteSpace(x.ContentHash) && !x.ContentHash.Equals("invalid", StringComparison.InvariantCultureIgnoreCase));
+            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.fff")}: Calc file scores");
             try
             {
                 Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, zfile =>

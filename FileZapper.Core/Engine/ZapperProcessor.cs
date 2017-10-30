@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2017 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,31 +18,29 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections;
-using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using CsvHelper;
 using FileZapper.Core.Configuration;
 using FileZapper.Core.Data;
 using FileZapper.Core.Utilities;
 using log4net;
-using System.IO;
-using System.Reflection;
-using CsvHelper;
 
 namespace FileZapper.Core.Engine
 {
     public class ZapperProcessor
     {
-        private readonly ILog _log = LogManager.GetLogger(typeof(ZapperProcessor));
+        public const string LogFilenameSessions = "zappersessions.csv";
 
+        public FileZapperSettings Settings { get; set; }
+        public ZapperSession ZapperSession { get { return _zapperSession; } }
         public ConcurrentDictionary<string, ZapperFile> ZapperFiles { get; set; }
         public ConcurrentDictionary<string, ZapperFileDeleted> ZapperFilesDeleted { get; set; }
 
-        private readonly ZapperSession _zapperSession = new ZapperSession { Id = Guid.NewGuid() };
-        public ZapperSession ZapperSession { get { return _zapperSession; } }
-
         private readonly IOrderedEnumerable<IZapperPhase> _phases;
-        public FileZapperSettings Settings { get; set; }
+        private readonly ZapperSession _zapperSession = new ZapperSession { Id = Guid.NewGuid() };
+        private readonly ILog _log = LogManager.GetLogger(typeof(ZapperProcessor));
 
         public ZapperProcessor(FileZapperSettings settings = null, IList<IZapperPhase> phases = null)
         {
@@ -80,7 +78,7 @@ namespace FileZapper.Core.Engine
             try
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("FileZapper   Copyright (C) 2016 Peter Wetzel");
+                Console.WriteLine("FileZapper   Copyright (C) 2017 Peter Wetzel");
                 Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; for details see license.txt.");
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Current configuration settings...");
@@ -92,7 +90,7 @@ namespace FileZapper.Core.Engine
                 Console.ForegroundColor = ConsoleColor.White;
                 foreach (var f in Settings.RootFolders)
                 {
-                    Console.WriteLine("{0} - {1}", f.Priority, f.FullPath);
+                    Console.WriteLine($"{f.Priority} - {f.FullPath}");
                 }
 
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -112,7 +110,7 @@ namespace FileZapper.Core.Engine
                 Exceptioneer.Log(_log, ex);
             }
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("{0}: Done. Press any key to continue.", DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine($"{DateTime.Now.ToString("HH: mm:ss.fff")}: Done. Press any key to continue.");
             Console.ReadLine();
         }
 
@@ -149,14 +147,17 @@ namespace FileZapper.Core.Engine
             }
         }
 
-        public string LogResults()
+        public string LogResults(string logPath = null)
         {
-            string sPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Results");
-            if (!Directory.Exists(sPath))
+            if (string.IsNullOrWhiteSpace(logPath))
             {
-                Directory.CreateDirectory(sPath);
+                logPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Results");
             }
-            string sFilePath = Path.Combine(sPath, "zappersessions.csv");
+            if (!Directory.Exists(logPath))
+            {
+                Directory.CreateDirectory(logPath);
+            }
+            string sFilePath = Path.Combine(logPath, LogFilenameSessions);
             bool bSessionFileExists = File.Exists(sFilePath);
             using (var textWriter = File.AppendText(sFilePath))
             {
@@ -171,7 +172,7 @@ namespace FileZapper.Core.Engine
             }
             if (ZapperFiles.Count > 0)
             {
-                sFilePath = Path.Combine(sPath, string.Format("files-{0}.csv", _zapperSession.Id));
+                sFilePath = Path.Combine(logPath, $"files-{_zapperSession.Id}.csv");
                 using (var textWriter = File.CreateText(sFilePath))
                 {
                     using (var writer = new CsvWriter(textWriter))
@@ -182,7 +183,7 @@ namespace FileZapper.Core.Engine
             }
             if (ZapperFilesDeleted.Count > 0)
             {
-                sFilePath = Path.Combine(sPath, string.Format("deleted-{0}.csv", _zapperSession.Id));
+                sFilePath = Path.Combine(logPath, $"deleted-{_zapperSession.Id}.csv");
                 using (var textWriter = File.CreateText(sFilePath))
                 {
                     using (var writer = new CsvWriter(textWriter))
@@ -191,13 +192,13 @@ namespace FileZapper.Core.Engine
                     }
                 }
             }
-            return sPath;
+            return logPath;
         }
 
         private void WriteSetting(string sName, string sValue)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("{0}: ", sName);
+            Console.Write($"{sName}: ");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine(sValue);
         }
@@ -205,7 +206,7 @@ namespace FileZapper.Core.Engine
         private void WritePhase(string sMessage)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("{0}: Phase {1} - {2}", DateTime.Now.ToString("HH:mm:ss.fff"), _zapperSession.CurrentPhase, sMessage);
+            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.fff")}: Phase {_zapperSession.CurrentPhase} - {sMessage}");
             Console.ForegroundColor = ConsoleColor.White;
         }
     }

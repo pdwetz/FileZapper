@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2017 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ namespace FileZapper.Core.Engine
                 System.Diagnostics.Trace.WriteLine("No unwanted folder names, skipping phase: " + Name);
                 return;
             }
-            Console.WriteLine("{0}: Deleting unwanted directories from file system...", DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.fff")}: Deleting unwanted directories from file system...");
             foreach (var root in ZapperProcessor.Settings.RootFolders)
             {
                 var dirs = Directory.EnumerateDirectories(root.FullPath, "*.*", System.IO.SearchOption.AllDirectories);

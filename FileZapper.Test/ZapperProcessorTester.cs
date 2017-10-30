@@ -70,9 +70,9 @@ namespace FileZapper.Test
         [Test]
         public void log_results()
         {
-            string sPath = _processor.LogResults();
-            System.Diagnostics.Trace.WriteLine(sPath);
-            string sFilePath = Path.Combine(sPath, "zappersessions.csv");
+            string logPathResult = _processor.LogResults(TestContext.CurrentContext.TestDirectory);
+            Assert.AreEqual(TestContext.CurrentContext.TestDirectory, logPathResult);
+            string sFilePath = Path.Combine(logPathResult, "zappersessions.csv");
             Assert.IsTrue(File.Exists(sFilePath));
         }
     }

@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2017 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ namespace FileZapper.Core.Engine
             _log.Info(Name);
             foreach (var root in ZapperProcessor.Settings.RootFolders)
             {
-                Console.WriteLine("{0}: Parsing folder {1}", DateTime.Now.ToString("HH:mm:ss.fff"), root.FullPath);
+                Console.WriteLine($"{DateTime.Now.ToString("HH: mm:ss.fff")}: Parsing folder {root.FullPath}");
                 var filepaths = Directory.EnumerateFiles(root.FullPath, "*.*", System.IO.SearchOption.AllDirectories);
                 try
                 {
@@ -52,7 +52,7 @@ namespace FileZapper.Core.Engine
                     {
                         if (filepath.Length >= 260)
                         {
-                            Console.WriteLine("{0}: Path too long - {1}", DateTime.Now.ToString("HH:mm:ss.fff"), filepath);
+                            Console.WriteLine($"{DateTime.Now.ToString("HH: mm:ss.fff")}: Path too long - {filepath}");
                         }
                         else
                         {
