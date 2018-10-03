@@ -37,10 +37,14 @@ namespace FileZapper.Test
             var wantedFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "wanted");
             var unwantedFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, sUnwantedFolderName);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            settings.UnwantedFolders = new string[] { sUnwantedFolderName };
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            FileZapperSettings settings = new FileZapperSettings
+            {
+                UnwantedFolders = new string[] { sUnwantedFolderName }
+            };
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();

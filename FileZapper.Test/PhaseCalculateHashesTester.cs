@@ -43,8 +43,10 @@ namespace FileZapper.Test
             ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();
@@ -80,8 +82,10 @@ namespace FileZapper.Test
             files.Add(new ZapperFile { FullPath = sFilePath, Size = 999, Extension = ".foo", SampleHash = "2" });
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();
@@ -117,8 +121,10 @@ namespace FileZapper.Test
             ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();

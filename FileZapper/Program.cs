@@ -15,14 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using System;
-using System.IO;
-using FileZapper.Core;
+using CommandLine;
 using FileZapper.Core.Engine;
-using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Serilog;
-using Serilog.Events;
+using System;
+using System.IO;
 
 namespace FileZapper
 {
@@ -35,49 +33,40 @@ namespace FileZapper
             // TODO Walk through all files and do cleanup, make notes for future changes, etc.
 
             Console.Title = "FileZapper";
-            var builder = new ConfigurationBuilder()
+            var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-            var config = builder.Build();
-            var settings = new FileZapperSettings();
-            config.GetSection("FileZapperSettings").Bind(settings);
-            // TODO Grab log config via appsettings.json
+                .AddJsonFile("appsettings.json")
+                .Build();
+            
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .Enrich.WithEnvironmentUserName()
-                .WriteTo.Debug()
-                .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
-                .WriteTo.File("Logs\\log-{Date}.txt", LogEventLevel.Information)
+                .ReadFrom.Configuration(config)
                 .CreateLogger();
 
-            var app = new CommandLineApplication
+            Parser.Default.ParseArguments<ProgramOptions>(args)
+                .WithParsed<ProgramOptions>(opts => RunOptionsAndReturnExitCode(opts));
+        }
+
+        private static void RunOptionsAndReturnExitCode(ProgramOptions options)
+        {
+            try
             {
-                Name = AppName
-            };
-            app.HelpOption("-?|-h|--help");
-            app.OnExecute(() =>
+                options.Init();
+                ZapperProcessor z = new ZapperProcessor(options);
+                z.Process();
+            }
+            catch (Exception ex)
             {
-                try
+                Log.Error(ex, ex.Message);
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+                if (options.PauseAtCompletion)
                 {
-                    Console.WriteLine("FileZapper   Copyright (C) 2018 Peter Wetzel");
-                    Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; for details see license.txt.");
-                    ZapperProcessor z = new ZapperProcessor(settings);
-                    z.Process();
-                    Console.WriteLine($"{DateTime.Now.ToString("HH: mm:ss.fff")}: Done. Press any key to continue.");
+                    Console.WriteLine("Press any key to continue.");
                     Console.ReadLine();
                 }
-                catch (Exception ex)
-                {
-                    var log = Log.ForContext<ZapperProcessor>();
-                    log.Error(ex, ex.Message);
-                }
-                finally
-                {
-                    Log.CloseAndFlush();
-                }
-                return 0;
-            });
-            app.Execute(args);
+            }
         }
     }
 }

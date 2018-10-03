@@ -42,13 +42,15 @@ namespace FileZapper.Test
             string sLargeFilePath = Path.Combine(rootFolder.FullPath, "large.txt");
             ZapperFileTestHelper.CreateTextFile(sLargeFilePath, 10);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            settings.UnwantedExtensions = new string[] { ".foo" };
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
-            settings.RootFolders = folders;
-            settings.IgnoreFilesBelowBytes = 1000;
-            settings.IgnoreFilesOverBytes = 3000;
+            FileZapperSettings settings = new FileZapperSettings
+            {
+                IgnoreFilesBelowBytes = 1000,
+                IgnoreFilesOverBytes = 3000,
+                SkippedExtensions = new string[] { },
+                UnwantedExtensions = new string[] { ".foo" },
+                UnwantedFolders = new string[] { },
+                RootFolders = new List<ZapperFolder> { rootFolder }
+            };
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();
             var phase = new PhaseParseFilesystem { PhaseOrder = 1, IsInitialPhase = true };

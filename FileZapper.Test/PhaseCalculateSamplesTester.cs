@@ -51,8 +51,10 @@ namespace FileZapper.Test
             files.Add(charlie);
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();
@@ -95,8 +97,10 @@ namespace FileZapper.Test
             files.Add(bravo);
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();
@@ -138,8 +142,10 @@ namespace FileZapper.Test
             files.Add(bravo);
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();
@@ -183,9 +189,11 @@ namespace FileZapper.Test
             files.Add(bravo);
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(alphaFolder);
-            folders.Add(bravoFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                alphaFolder,
+                bravoFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();

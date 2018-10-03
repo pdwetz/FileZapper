@@ -28,3 +28,4 @@ _ReSharper*/
 packages/
 *.VisualState.xml
 .vs/
+/FileZapper/Properties/launchSettings.json

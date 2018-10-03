@@ -32,12 +32,11 @@ namespace FileZapper.Core.Engine
         public const string LogFilenameSessions = "zappersessions.csv";
 
         public FileZapperSettings Settings { get; set; }
-        public ZapperSession ZapperSession { get { return _zapperSession; } }
+        public ZapperSession ZapperSession { get; } = new ZapperSession { Id = Guid.NewGuid() };
         public ConcurrentDictionary<string, ZapperFile> ZapperFiles { get; set; }
         public ConcurrentDictionary<string, ZapperFileDeleted> ZapperFilesDeleted { get; set; }
 
         private readonly IOrderedEnumerable<IZapperPhase> _phases;
-        private readonly ZapperSession _zapperSession = new ZapperSession { Id = Guid.NewGuid() };
         private readonly ILogger _log;
 
         public ZapperProcessor(FileZapperSettings settings, IList<IZapperPhase> phases = null)
@@ -71,7 +70,7 @@ namespace FileZapper.Core.Engine
             try
             {
                 _log.Verbose("Current configuration settings: {@Settings}", Settings);
-                _zapperSession.CurrentPhase = _phases.First(x => x.IsInitialPhase).PhaseOrder;
+                ZapperSession.CurrentPhase = _phases.First(x => x.IsInitialPhase).PhaseOrder;
                 Process();
             }
             catch (Exception ex)
@@ -85,14 +84,14 @@ namespace FileZapper.Core.Engine
             try
             {
                 _log.Information("Processing");
-                _zapperSession.StartDate = DateTime.Now;
-                var phases = _phases.Where(x => x.PhaseOrder >= _zapperSession.CurrentPhase);
+                ZapperSession.StartDate = DateTime.Now;
+                var phases = _phases.Where(x => x.PhaseOrder >= ZapperSession.CurrentPhase);
                 foreach (var phase in phases)
                 {
-                    _log.Information("Phase {CurrentPhase} - {Name}", _zapperSession.CurrentPhase, phase.Name);
+                    _log.Information("Phase {CurrentPhase} - {Name}", ZapperSession.CurrentPhase, phase.Name);
                     phase.Process();
-                    _zapperSession.PhasesProcessed++;
-                    _zapperSession.CurrentPhase++;
+                    ZapperSession.PhasesProcessed++;
+                    ZapperSession.CurrentPhase++;
                 }
             }
             catch (Exception ex)
@@ -102,13 +101,13 @@ namespace FileZapper.Core.Engine
             finally
             {
                 _log.Information("Done.");
-                _zapperSession.EndDate = DateTime.Now;
-                _zapperSession.RuntimeMS = (_zapperSession.EndDate.Value - _zapperSession.StartDate).TotalMilliseconds;
-                _zapperSession.FilesAdded = ZapperFiles.Count;
-                _zapperSession.FilesSampled = ZapperFiles.Values.Count(x => !string.IsNullOrWhiteSpace(x.SampleHash));
-                _zapperSession.FilesHashed = ZapperFiles.Values.Count(x => !string.IsNullOrWhiteSpace(x.ContentHash));
-                _zapperSession.FilesDeleted = ZapperFilesDeleted.Count;
-                _zapperSession.TotalFilesProcessed = _zapperSession.FilesAdded + _zapperSession.FilesDeleted;
+                ZapperSession.EndDate = DateTime.Now;
+                ZapperSession.RuntimeMS = (ZapperSession.EndDate.Value - ZapperSession.StartDate).TotalMilliseconds;
+                ZapperSession.FilesAdded = ZapperFiles.Count;
+                ZapperSession.FilesSampled = ZapperFiles.Values.Count(x => !string.IsNullOrWhiteSpace(x.SampleHash));
+                ZapperSession.FilesHashed = ZapperFiles.Values.Count(x => !string.IsNullOrWhiteSpace(x.ContentHash));
+                ZapperSession.FilesDeleted = ZapperFilesDeleted.Count;
+                ZapperSession.TotalFilesProcessed = ZapperSession.FilesAdded + ZapperSession.FilesDeleted;
                 LogResults();
             }
         }
@@ -134,12 +133,12 @@ namespace FileZapper.Core.Engine
                     {
                         writer.WriteHeader<ZapperSession>();
                     }
-                    writer.WriteRecord(_zapperSession);
+                    writer.WriteRecord(ZapperSession);
                 }
             }
             if (ZapperFiles.Count > 0)
             {
-                filePath = Path.Combine(logPath, $"files-{_zapperSession.Id}.csv");
+                filePath = Path.Combine(logPath, $"files-{ZapperSession.Id}.csv");
                 using (var textWriter = File.CreateText(filePath))
                 {
                     using (var writer = new CsvWriter(textWriter))
@@ -150,7 +149,7 @@ namespace FileZapper.Core.Engine
             }
             if (ZapperFilesDeleted.Count > 0)
             {
-                filePath = Path.Combine(logPath, $"deleted-{_zapperSession.Id}.csv");
+                filePath = Path.Combine(logPath, $"deleted-{ZapperSession.Id}.csv");
                 using (var textWriter = File.CreateText(filePath))
                 {
                     using (var writer = new CsvWriter(textWriter))

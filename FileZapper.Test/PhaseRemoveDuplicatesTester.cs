@@ -37,8 +37,10 @@ namespace FileZapper.Test
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();
@@ -73,9 +75,11 @@ namespace FileZapper.Test
             ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
 
             FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(importantFolder);
-            folders.Add(loserFolder);
+            List<ZapperFolder> folders = new List<ZapperFolder>
+            {
+                importantFolder,
+                loserFolder
+            };
             settings.RootFolders = folders;
 
             List<IZapperPhase> allphases = new List<IZapperPhase>();

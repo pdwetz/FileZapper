@@ -22,13 +22,14 @@ namespace FileZapper.Core
 {
     public class FileZapperSettings
     {
-        public string Hasher { get; set; } = "Farmhash";
-        public bool DupeCheckIgnoresHierarchy { get; set; }
-        public long IgnoreFilesBelowBytes { get; set; } = 0;
-        public long IgnoreFilesOverBytes { get; set; } = long.MaxValue;
-        public string[] SkippedExtensions { get; set; } = new string[] { };
-        public string[] UnwantedExtensions { get; set; } = new string[] { };
-        public string[] UnwantedFolders { get; set; } = new string[] { };
-        public List<ZapperFolder> RootFolders { get; set; } = new List<ZapperFolder>();
+        public virtual string Hasher { get; set; } = "Farmhash";
+        public virtual bool DupeCheckIgnoresHierarchy { get; set; }
+        public virtual long IgnoreFilesBelowBytes { get; set; }
+        public virtual long IgnoreFilesOverBytes { get; set; }
+        public virtual IEnumerable<string> SkippedExtensions { get; set; }
+        public virtual IEnumerable<string> UnwantedExtensions { get; set; }
+        public virtual IEnumerable<string> UnwantedFolders { get; set; }
+
+        public List<ZapperFolder> RootFolders { get; set; }
     }
 }
