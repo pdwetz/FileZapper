@@ -20,48 +20,48 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FileZapper.Core.Data;
-using FileZapper.Core.Utilities;
-using log4net;
 using Microsoft.VisualBasic.FileIO;
+using Serilog;
 
 namespace FileZapper.Core.Engine
 {
     public class PhaseParseFilesystem : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseParseFilesystem));
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "Parse file system";
         public bool IsInitialPhase { get; set; }
+
+        private readonly ILogger _log;
 
         public PhaseParseFilesystem()
         {
-            Name = "Parse file system";
+            _log = Log.ForContext<PhaseParseFilesystem>();
         }
 
         public void Process()
         {
-            _log.Info(Name);
+            _log.Information(Name);
             foreach (var root in ZapperProcessor.Settings.RootFolders)
             {
-                Console.WriteLine($"{DateTime.Now.ToString("HH: mm:ss.fff")}: Parsing folder {root.FullPath}");
+                _log.Information("Parsing folder {FullPath}", root.FullPath);
                 var filepaths = Directory.EnumerateFiles(root.FullPath, "*.*", System.IO.SearchOption.AllDirectories);
                 try
                 {
-                    Parallel.ForEach(filepaths, filepath =>
+                    Parallel.ForEach(filepaths, filePath =>
                     {
-                        if (filepath.Length >= 260)
+                        if (filePath.Length >= 260)
                         {
-                            Console.WriteLine($"{DateTime.Now.ToString("HH: mm:ss.fff")}: Path too long - {filepath}");
+                            _log.Warning("Path too long - {FilePath}", filePath);
                         }
                         else
                         {
-                            var zfile = new ZapperFile(filepath);
+                            var zfile = new ZapperFile(filePath);
                             if (!zfile.IsSystem)
                             {
                                 if (ZapperProcessor.Settings.UnwantedExtensions.Contains(zfile.Extension))
                                 {
-                                    FileSystem.DeleteFile(filepath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                                    FileSystem.DeleteFile(filePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                                     ZapperFileDeleted zfiledeleted = new ZapperFileDeleted(zfile, ZapperProcessor.ZapperSession.Id);
                                     if (!ZapperProcessor.ZapperFilesDeleted.TryAdd(zfiledeleted.FullPath, zfiledeleted))
                                     {
@@ -85,7 +85,7 @@ namespace FileZapper.Core.Engine
                 {
                     ae.Handle(e =>
                     {
-                        Exceptioneer.Log(_log, e);
+                        _log.Error(e, "Error while parsing file system");
                         return true;
                     });
                 }

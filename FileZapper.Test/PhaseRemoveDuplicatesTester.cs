@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FileZapper.Core.Configuration;
+using FileZapper.Core;
 using FileZapper.Core.Data;
 using FileZapper.Core.Engine;
 using NUnit.Framework;
@@ -53,7 +53,7 @@ namespace FileZapper.Test
         }
 
         [Test]
-        public void process()
+        public void process_duplicates()
         {
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseRemoveDuplicatesTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);

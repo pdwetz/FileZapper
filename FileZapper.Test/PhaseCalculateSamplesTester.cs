@@ -17,7 +17,7 @@
 */
 using System.Collections.Generic;
 using System.IO;
-using FileZapper.Core.Configuration;
+using FileZapper.Core;
 using FileZapper.Core.Data;
 using FileZapper.Core.Engine;
 using NUnit.Framework;
@@ -28,7 +28,7 @@ namespace FileZapper.Test
     public class PhaseCalculateSamplesTester
     {
         [Test]
-        public void process()
+        public void process_samples()
         {
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateSamplesTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);

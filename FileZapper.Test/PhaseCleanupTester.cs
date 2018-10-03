@@ -17,7 +17,7 @@
 */
 using System.Collections.Generic;
 using System.IO;
-using FileZapper.Core.Configuration;
+using FileZapper.Core;
 using FileZapper.Core.Data;
 using FileZapper.Core.Engine;
 using NUnit.Framework;
@@ -28,7 +28,7 @@ namespace FileZapper.Test
     public class PhaseCleanupTester
     {
         [Test]
-        public void process()
+        public void process_cleanup()
         {
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCleanupTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);

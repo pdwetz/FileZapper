@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2017 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,14 +15,20 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using System;
+using System.Collections.Generic;
+using FileZapper.Core.Data;
 
-namespace FileZapper.Core.Engine
+namespace FileZapper.Core
 {
-    public class FileZapperRemoveFromDictionaryFailureException : Exception
+    public class FileZapperSettings
     {
-        public FileZapperRemoveFromDictionaryFailureException(string dictionaryName, string key)
-            : base($"Dictionary {dictionaryName} unable to remove key '{key}'")
-        { }
+        public string Hasher { get; set; } = "Farmhash";
+        public bool DupeCheckIgnoresHierarchy { get; set; }
+        public long IgnoreFilesBelowBytes { get; set; } = 0;
+        public long IgnoreFilesOverBytes { get; set; } = long.MaxValue;
+        public string[] SkippedExtensions { get; set; } = new string[] { };
+        public string[] UnwantedExtensions { get; set; } = new string[] { };
+        public string[] UnwantedFolders { get; set; } = new string[] { };
+        public List<ZapperFolder> RootFolders { get; set; } = new List<ZapperFolder>();
     }
 }

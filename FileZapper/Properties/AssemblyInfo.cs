@@ -4,11 +4,14 @@
 [assembly: AssemblyDescription("Finds and removes duplicate files from specified folders")]
 [assembly: AssemblyProduct("FileZapper")]
 [assembly: AssemblyCopyright("Copyright © 2017 Peter Wetzel")]
-[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
-[assembly: AssemblyVersion("2.2.1.0")]
-[assembly: AssemblyFileVersion("2.2.1.0")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
 /*
+ * Version 3.0.0.0
+ * - Support for multiple hashing options. Defaults to Farmhash.
+ * - Logging now uses Serilog
+ * - Uses new MS extensions for command line, config, etc.
  * Version 2.2.1.0
  * - Now targets .NET framework v4.7
  * - Nugets updated

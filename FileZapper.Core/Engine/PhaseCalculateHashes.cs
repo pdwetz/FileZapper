@@ -23,27 +23,27 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FileZapper.Core.Data;
 using FileZapper.Core.Utilities;
-using log4net;
+using Serilog;
 
 namespace FileZapper.Core.Engine
 {
     public class PhaseCalculateHashes : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseCalculateHashes));
-
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "Calculate content hashes (this may take awhile)";
         public bool IsInitialPhase { get; set; }
+
+        private readonly ILogger _log;
 
         public PhaseCalculateHashes()
         {
-            Name = "Calculate content hashes (this may take awhile)";
+            _log = Log.ForContext<PhaseCalculateHashes>();
         }
 
         public void Process()
         {
-            _log.Info(Name);
+            _log.Information(Name);
             // TODO Test perf of parallelism here; since it's I/O bound, should we make it more aware of different disks being checked?
             var possibleDupes = 
                 (from z in ZapperProcessor.ZapperFiles.Values
@@ -66,20 +66,38 @@ namespace FileZapper.Core.Engine
             });
         }
 
-        public static async Task<string> CalculateMD5Hash(string sFilePath)
+        public static async Task<string> CalculateMD5Hash(string filePath)
         {
             using (MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider())
             {
                 byte[] hashvalue;
-                // TODO Test perf of different buffer sizes, particularly for different file sizes (e.g. 10kb, 150kb, 500kb, 1mb, 5mb, 20mb, 50mb, 150mb, 500mb, 1gb, 2gb)
-                using (var stream = new BufferedStream(File.OpenRead(sFilePath), 1200000))
+                using (var stream = new BufferedStream(File.OpenRead(filePath), 1200000))
                 {
-                    // TODO Verify that async change is necessary (or maybe should be on buffered file load instead, with the following line removed?)
                     await stream.FlushAsync();
                     hashvalue = hasher.ComputeHash(stream);
                 }
                 return BitConverter.ToString(hashvalue);
             }
+        }
+
+        public static async Task<string> CalculateCrcHash(string filePath)
+        {
+            using (Crc32 hasher = new Crc32())
+            {
+                byte[] hashvalue;
+                using (var stream = new BufferedStream(File.OpenRead(filePath), 1200000))
+                {
+                    await stream.FlushAsync();
+                    hashvalue = hasher.ComputeHash(stream);
+                }
+                return BitConverter.ToString(hashvalue);
+            }
+        }
+
+        public static ulong CalculateFarmhash(string filePath)
+        {
+            var bytes = File.ReadAllBytes(filePath);
+            return Farmhash.Sharp.Farmhash.Hash64(bytes, bytes.Length);
         }
 
         public async void Hashify(ZapperFile zfile)
@@ -93,11 +111,22 @@ namespace FileZapper.Core.Engine
                 zfile.LoadFileSystemInfo();
                 
                 var hashtimer = Stopwatch.StartNew();
-                // TODO Do timing differences between Crc32 and MD5
-                zfile.ContentHash = await CalculateMD5Hash(zfile.FullPath);
+                if (ZapperProcessor.Settings.Hasher == "MD5")
+                {
+                    zfile.ContentHash = await CalculateMD5Hash(zfile.FullPath);
+                }
+                else if (ZapperProcessor.Settings.Hasher == "CRC")
+                {
+                    zfile.ContentHash = await CalculateCrcHash(zfile.FullPath);
+                }
+                else
+                {
+                    zfile.ContentHash = CalculateFarmhash(zfile.FullPath).ToString();
+                }
                
                 hashtimer.Stop();
                 zfile.HashTime = hashtimer.ElapsedMilliseconds;
+                _log.Verbose("File hashed {@Zfile}", zfile);
 
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
@@ -106,7 +135,7 @@ namespace FileZapper.Core.Engine
             }
             catch (Exception ex)
             {
-                Exceptioneer.Log(_log, ex, $"Due to error, file tagged with INVALID content hash: {zfile.FullPath}");
+                _log.Error(ex, "Due to error, file tagged with INVALID content hash: {FullPath}", zfile.FullPath);
                 zfile.ContentHash = "INVALID";
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {

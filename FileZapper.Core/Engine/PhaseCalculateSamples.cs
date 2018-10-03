@@ -22,27 +22,27 @@ using System.Security.Cryptography;
 using System.Threading.Tasks;
 using FileZapper.Core.Data;
 using FileZapper.Core.Utilities;
-using log4net;
+using Serilog;
 
 namespace FileZapper.Core.Engine
 {
     public class PhaseCalculateSamples : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseCalculateSamples));
-
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "Calculate sample hashes";
         public bool IsInitialPhase { get; set; }
+
+        private readonly ILogger _log;
 
         public PhaseCalculateSamples()
         {
-            Name = "Calculate sample hashes";
+            _log = Log.ForContext<PhaseCalculateSamples>();
         }
 
         public void Process()
         {
-            _log.Info(Name);
+            _log.Information(Name);
             if (ZapperProcessor.Settings.DupeCheckIgnoresHierarchy)
             {
                 var possibleDupes =
@@ -87,17 +87,45 @@ namespace FileZapper.Core.Engine
             {
                 zfile.LoadFileSystemInfo();
                 var buffer = new byte[zfile.SampleBytesSize];
-                using (MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider())
+
+                if (ZapperProcessor.Settings.Hasher == "MD5")
                 {
-                    byte[] hashvalue;
+                    using (MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider())
+                    {
+                        byte[] hashvalue;
+                        using (var stream = File.OpenRead(zfile.FullPath))
+                        {
+                            stream.Seek(zfile.SampleBytesOffset, SeekOrigin.Begin);
+                            stream.Read(buffer, 0, zfile.SampleBytesSize);
+                            hashvalue = hasher.ComputeHash(buffer);
+                        }
+                        zfile.SampleHash = BitConverter.ToString(hashvalue);
+                    }
+                }
+                else if (ZapperProcessor.Settings.Hasher == "CRC")
+                {
+                    using (Crc32 hasher = new Crc32())
+                    {
+                        byte[] hashvalue;
+                        using (var stream = File.OpenRead(zfile.FullPath))
+                        {
+                            stream.Seek(zfile.SampleBytesOffset, SeekOrigin.Begin);
+                            stream.Read(buffer, 0, zfile.SampleBytesSize);
+                            hashvalue = hasher.ComputeHash(buffer);
+                        }
+                        zfile.SampleHash = BitConverter.ToString(hashvalue);
+                    }
+                }
+                else
+                {
                     using (var stream = File.OpenRead(zfile.FullPath))
                     {
                         stream.Seek(zfile.SampleBytesOffset, SeekOrigin.Begin);
                         stream.Read(buffer, 0, zfile.SampleBytesSize);
-                        hashvalue = hasher.ComputeHash(buffer);
+                        zfile.SampleHash = Farmhash.Sharp.Farmhash.Hash64(buffer, buffer.Length).ToString();
                     }
-                    zfile.SampleHash = BitConverter.ToString(hashvalue);
                 }
+                _log.Verbose("File sample hashed {@Zfile}", zfile);
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
                     throw new FileZapperUpdateDictionaryFailureException("ZapperFiles", zfile.FullPath);
@@ -105,7 +133,7 @@ namespace FileZapper.Core.Engine
             }
             catch (Exception ex)
             {
-                Exceptioneer.Log(_log, ex, $"Due to error, file tagged with INVALID sample hash: {zfile.FullPath}");
+                _log.Error(ex, "Due to error, file tagged with INVALID content hash: {FullPath}", zfile.FullPath);
                 zfile.SampleHash = "INVALID";
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {

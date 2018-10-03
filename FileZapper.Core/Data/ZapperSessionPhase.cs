@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2017 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,10 +28,5 @@ namespace FileZapper.Core.Data
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long RuntimeMS { get; set; }
-        //public long FilesAdded { get; set; }
-        //public long FilesHashed { get; set; }
-        //public long FilesDeleted { get; set; }
-        //public long TotalFilesProcessed { get; set; }
-        //public long BytesProcessed { get; set; }
     }
 }

@@ -22,10 +22,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using CsvHelper;
-using FileZapper.Core.Configuration;
 using FileZapper.Core.Data;
-using FileZapper.Core.Utilities;
-using log4net;
+using Serilog;
 
 namespace FileZapper.Core.Engine
 {
@@ -40,21 +38,16 @@ namespace FileZapper.Core.Engine
 
         private readonly IOrderedEnumerable<IZapperPhase> _phases;
         private readonly ZapperSession _zapperSession = new ZapperSession { Id = Guid.NewGuid() };
-        private readonly ILog _log = LogManager.GetLogger(typeof(ZapperProcessor));
+        private readonly ILogger _log;
 
-        public ZapperProcessor(FileZapperSettings settings = null, IList<IZapperPhase> phases = null)
+        public ZapperProcessor(FileZapperSettings settings, IList<IZapperPhase> phases = null)
         {
-            _log.Info("Initializing");
+            _log = Log.ForContext<ZapperProcessor>();
+            _log.Information("Initializing");
 
             ZapperFiles = new ConcurrentDictionary<string, ZapperFile>();
             ZapperFilesDeleted = new ConcurrentDictionary<string, ZapperFileDeleted>();
-
-            if (settings == null)
-            {
-                settings = new FileZapperSettings();
-                settings.Load();
-            }
-            Settings = settings;
+            Settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
             if (phases != null)
             {
@@ -77,53 +70,26 @@ namespace FileZapper.Core.Engine
         {
             try
             {
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("FileZapper   Copyright (C) 2017 Peter Wetzel");
-                Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; for details see license.txt.");
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Current configuration settings...");
-                WriteSetting("Ignored extensions", string.Join(", ", Settings.SkippedExtensions));
-                WriteSetting("Unwanted extensions", string.Join(", ", Settings.UnwantedExtensions));
-                WriteSetting("Unwanted folders", string.Join(", ", Settings.UnwantedFolders));
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Enabled folders (score - path):");
-                Console.ForegroundColor = ConsoleColor.White;
-                foreach (var f in Settings.RootFolders)
-                {
-                    Console.WriteLine($"{f.Priority} - {f.FullPath}");
-                }
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Please choose a number for a starting phase.");
-                foreach (var phase in _phases)
-                {
-                    Console.WriteLine("{0}) {1}{2}", phase.PhaseOrder, phase.Name, phase.IsInitialPhase ? " [default]" : "");
-                }
-                Console.Write("Phase> ");
-                string sChoice = Console.ReadLine();
-                int iInitialPhase = string.IsNullOrWhiteSpace(sChoice) ? _phases.First(x => x.IsInitialPhase).PhaseOrder : Convert.ToInt32(sChoice);
-                _zapperSession.CurrentPhase = iInitialPhase;
+                _log.Verbose("Current configuration settings: {@Settings}", Settings);
+                _zapperSession.CurrentPhase = _phases.First(x => x.IsInitialPhase).PhaseOrder;
                 Process();
             }
             catch (Exception ex)
             {
-                Exceptioneer.Log(_log, ex);
+                _log.Error(ex, "Error encountered");
             }
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"{DateTime.Now.ToString("HH: mm:ss.fff")}: Done. Press any key to continue.");
-            Console.ReadLine();
         }
 
         public void Process()
         {
             try
             {
-                _log.Info("Processing");
+                _log.Information("Processing");
                 _zapperSession.StartDate = DateTime.Now;
                 var phases = _phases.Where(x => x.PhaseOrder >= _zapperSession.CurrentPhase);
                 foreach (var phase in phases)
                 {
-                    WritePhase(phase.Name);
+                    _log.Information("Phase {CurrentPhase} - {Name}", _zapperSession.CurrentPhase, phase.Name);
                     phase.Process();
                     _zapperSession.PhasesProcessed++;
                     _zapperSession.CurrentPhase++;
@@ -131,11 +97,11 @@ namespace FileZapper.Core.Engine
             }
             catch (Exception ex)
             {
-                Exceptioneer.Log(_log, ex);
+                _log.Error(ex, "Error while processing");
             }
             finally
             {
-                _log.Info("Done");
+                _log.Information("Done.");
                 _zapperSession.EndDate = DateTime.Now;
                 _zapperSession.RuntimeMS = (_zapperSession.EndDate.Value - _zapperSession.StartDate).TotalMilliseconds;
                 _zapperSession.FilesAdded = ZapperFiles.Count;
@@ -157,9 +123,10 @@ namespace FileZapper.Core.Engine
             {
                 Directory.CreateDirectory(logPath);
             }
-            string sFilePath = Path.Combine(logPath, LogFilenameSessions);
-            bool bSessionFileExists = File.Exists(sFilePath);
-            using (var textWriter = File.AppendText(sFilePath))
+            _log.Information("Logging results to {LogPath}", logPath);
+            string filePath = Path.Combine(logPath, LogFilenameSessions);
+            bool bSessionFileExists = File.Exists(filePath);
+            using (var textWriter = File.AppendText(filePath))
             {
                 using (var writer = new CsvWriter(textWriter))
                 {
@@ -172,8 +139,8 @@ namespace FileZapper.Core.Engine
             }
             if (ZapperFiles.Count > 0)
             {
-                sFilePath = Path.Combine(logPath, $"files-{_zapperSession.Id}.csv");
-                using (var textWriter = File.CreateText(sFilePath))
+                filePath = Path.Combine(logPath, $"files-{_zapperSession.Id}.csv");
+                using (var textWriter = File.CreateText(filePath))
                 {
                     using (var writer = new CsvWriter(textWriter))
                     {
@@ -183,8 +150,8 @@ namespace FileZapper.Core.Engine
             }
             if (ZapperFilesDeleted.Count > 0)
             {
-                sFilePath = Path.Combine(logPath, $"deleted-{_zapperSession.Id}.csv");
-                using (var textWriter = File.CreateText(sFilePath))
+                filePath = Path.Combine(logPath, $"deleted-{_zapperSession.Id}.csv");
+                using (var textWriter = File.CreateText(filePath))
                 {
                     using (var writer = new CsvWriter(textWriter))
                     {
@@ -193,21 +160,6 @@ namespace FileZapper.Core.Engine
                 }
             }
             return logPath;
-        }
-
-        private void WriteSetting(string sName, string sValue)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write($"{sName}: ");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(sValue);
-        }
-
-        private void WritePhase(string sMessage)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.fff")}: Phase {_zapperSession.CurrentPhase} - {sMessage}");
-            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }
