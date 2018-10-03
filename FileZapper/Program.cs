@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2017 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,29 +32,34 @@ namespace FileZapper
 
         static void Main(string[] args)
         {
+            // TODO Walk through all files and do cleanup, make notes for future changes, etc.
+
             Console.Title = "FileZapper";
             var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json");
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
             var config = builder.Build();
             var settings = new FileZapperSettings();
             config.GetSection("FileZapperSettings").Bind(settings);
+            // TODO Grab log config via appsettings.json
             Log.Logger = new LoggerConfiguration()
-                    .MinimumLevel.Debug()
-                    .Enrich.WithEnvironmentUserName()
-                    .WriteTo.Debug()
-                    .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
-                    .WriteTo.File("Logs\\log-{Date}.txt", LogEventLevel.Information)
-                    .CreateLogger();
+                .MinimumLevel.Debug()
+                .Enrich.WithEnvironmentUserName()
+                .WriteTo.Debug()
+                .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+                .WriteTo.File("Logs\\log-{Date}.txt", LogEventLevel.Information)
+                .CreateLogger();
 
-            var app = new CommandLineApplication();
-            app.Name = AppName;
+            var app = new CommandLineApplication
+            {
+                Name = AppName
+            };
             app.HelpOption("-?|-h|--help");
             app.OnExecute(() =>
             {
                 try
                 {
-                    Console.WriteLine("FileZapper   Copyright (C) 2017 Peter Wetzel");
+                    Console.WriteLine("FileZapper   Copyright (C) 2018 Peter Wetzel");
                     Console.WriteLine("This program comes with ABSOLUTELY NO WARRANTY; for details see license.txt.");
                     ZapperProcessor z = new ZapperProcessor(settings);
                     z.Process();

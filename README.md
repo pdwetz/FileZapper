@@ -7,19 +7,26 @@ This was primarily a project to scratch an itch of mine and isn't particularly m
 
 # Features
 - Console application... with colors!
-- Utilizes parallel aspects of .NET 4+ framework; tested with physical 4 core Intel cpu.
+- Utilizes parallel aspects of .Net; tested with physical 4 core Intel cpu.
 - Performs multiple phases for determining and removing duplicate files via MD5 hashing and a simple scoring mechanism. Includes an initial sampling pass to limit number of full file hashes.
 - Allows you to skip phases if necessary; mainly for testing/debugging purposes.
 - For large file systems, processing can be intensive for CPU and I/O and take hours to run.
 - For small tests, it should run very quickly (a few seconds at most).
 
 Planned work (mostly TODO's in the code) with no real time table:
-- Migrate to .Net Core (including switching to latest commandline and config logic)
-- Do perf differences on Crc32 vs. MD5 (possibly switching, or making it a setting to determine which is used)
+- Switch to CommandLineParser, as it's more flexible and MS isn't actively doing work on CommandLineUtils.
 - Profile parallel logic to make sure we're not improperly hitting bottlenecks (including testing of partitioning logic)
 - Test various buffer sizes when hashing for optimal size (could vary depending on file size)
+- In general, profiling and performance tuning
 
 # Release Notes
+Version 3.0.0.0
+- Library now targets netstandard 2.0, CLI and Test target .Net Core 2.1
+- Deletes are now final. No more recycle bin support.
+- Support for multiple hashing options. Defaults to Farmhash.
+- Logging now uses Serilog
+- Uses new MS extensions for command line, config, etc.
+
 Version 2.2.1.0
 - Now targets .NET framework v4.7
 - Nugets updated

@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2017 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FileZapper.Core.Data;
-using Microsoft.VisualBasic.FileIO;
 using Serilog;
 
 namespace FileZapper.Core.Engine
@@ -88,15 +87,14 @@ namespace FileZapper.Core.Engine
                     {
                         if (File.Exists(dead.FullPath))
                         {
-                            FileSystem.DeleteFile(dead.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                            File.Delete(dead.FullPath);
                         }
                         ZapperFileDeleted zfiledeleted = new ZapperFileDeleted(dead, ZapperProcessor.ZapperSession.Id);
                         if (!ZapperProcessor.ZapperFilesDeleted.TryAdd(zfiledeleted.FullPath, zfiledeleted))
                         {
                             throw new FileZapperAddToDictionaryFailureException("ZapperFilesDeleted", zfiledeleted.FullPath);
                         }
-                        ZapperFile killed;
-                        if (!ZapperProcessor.ZapperFiles.TryRemove(dead.FullPath, out killed))
+                        if (!ZapperProcessor.ZapperFiles.TryRemove(dead.FullPath, out ZapperFile killed))
                         {
                             throw new FileZapperRemoveFromDictionaryFailureException("ZapperFiles", dead.FullPath);
                         }

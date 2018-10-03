@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2017 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -109,25 +109,22 @@ namespace FileZapper.Core.Engine
             try
             {
                 zfile.LoadFileSystemInfo();
-                
                 var hashtimer = Stopwatch.StartNew();
-                if (ZapperProcessor.Settings.Hasher == "MD5")
+                switch (ZapperProcessor.Settings.Hasher)
                 {
-                    zfile.ContentHash = await CalculateMD5Hash(zfile.FullPath);
+                    case "MD5":
+                        zfile.ContentHash = await CalculateMD5Hash(zfile.FullPath);
+                        break;
+                    case "CRC":
+                        zfile.ContentHash = await CalculateCrcHash(zfile.FullPath);
+                        break;
+                    default:
+                        zfile.ContentHash = CalculateFarmhash(zfile.FullPath).ToString();
+                        break;
                 }
-                else if (ZapperProcessor.Settings.Hasher == "CRC")
-                {
-                    zfile.ContentHash = await CalculateCrcHash(zfile.FullPath);
-                }
-                else
-                {
-                    zfile.ContentHash = CalculateFarmhash(zfile.FullPath).ToString();
-                }
-               
                 hashtimer.Stop();
                 zfile.HashTime = hashtimer.ElapsedMilliseconds;
                 _log.Verbose("File hashed {@Zfile}", zfile);
-
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
                     throw new FileZapperUpdateDictionaryFailureException("ZapperFiles", zfile.FullPath);
