@@ -118,14 +118,14 @@ namespace FileZapper.Core.Engine
         {
             var root = ZapperProcessor.Settings.RootFolders.FirstOrDefault(x => zfile.Directory.StartsWith(x.FullPath, StringComparison.OrdinalIgnoreCase));
             // Assumes "core" folders have 6 figure priority
-            int iRootScore = root == null ? 0 : root.Priority;
+            int rootScore = root == null ? 0 : root.Priority;
             // Assumes named folders should take priority over misc folders
-            int iNotMiscScore = zfile.Directory.Contains("misc") || zfile.Directory.Contains("unfiltered") ? 0 : 10000;
+            int notMiscScore = zfile.Directory.Contains("misc") || zfile.Directory.Contains("unfiltered") ? 0 : 10000;
             // Assumes deeply nested is better than not
-            int iNestScore = (zfile.Directory.Count(x => x == '\\') + 1) * 1000;
+            int nestScore = (zfile.Directory.Count(x => x == '\\') + 1) * 1000;
             // Assumes older is better
-            int iTimeScore = Convert.ToInt32((DateTime.Now - (zfile.FileModified ?? DateTime.Now)).TotalDays / 365);
-            zfile.Score = iRootScore + iNotMiscScore + iNestScore + iTimeScore;
+            int timeScore = Convert.ToInt32((DateTime.Now - (zfile.FileModified ?? DateTime.Now)).TotalDays / 365);
+            zfile.Score = rootScore + notMiscScore + nestScore + timeScore;
         }
     }
 }

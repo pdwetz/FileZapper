@@ -40,9 +40,9 @@ namespace FileZapper.Test
         [Test]
         public void load_small_file()
         {
-            string sFilePath = Path.Combine(_rootFolder.FullPath, SmallFileName);
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
-            var zfile = new ZapperFile(sFilePath);
+            string filePath = Path.Combine(_rootFolder.FullPath, SmallFileName);
+            ZapperFileTestHelper.CreateTextFile(filePath, 5);
+            var zfile = new ZapperFile(filePath);
             Assert.IsNotNull(zfile);
             Assert.AreEqual(zfile.Name, SmallFileName);
             Assert.AreNotEqual(zfile.Size, 0);
@@ -54,9 +54,9 @@ namespace FileZapper.Test
         [Test]
         public void load_medium_file()
         {
-            string sFilePath = Path.Combine(_rootFolder.FullPath, MediumFileName);
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 500);
-            var zfile = new ZapperFile(sFilePath);
+            string filePath = Path.Combine(_rootFolder.FullPath, MediumFileName);
+            ZapperFileTestHelper.CreateTextFile(filePath, 500);
+            var zfile = new ZapperFile(filePath);
             Assert.IsNotNull(zfile);
             Assert.AreEqual(zfile.Name, MediumFileName);
             Assert.AreNotEqual(zfile.Size, 0);
@@ -68,9 +68,9 @@ namespace FileZapper.Test
         [Test]
         public void load_large_file()
         {
-            string sFilePath = Path.Combine(_rootFolder.FullPath, LargeFileName);
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50000);
-            var zfile = new ZapperFile(sFilePath);
+            string filePath = Path.Combine(_rootFolder.FullPath, LargeFileName);
+            ZapperFileTestHelper.CreateTextFile(filePath, 50000);
+            var zfile = new ZapperFile(filePath);
             Assert.IsNotNull(zfile);
             Assert.AreEqual(zfile.Name, LargeFileName);
             Assert.AreNotEqual(zfile.Size, 0);

@@ -36,14 +36,14 @@ namespace FileZapper.Test
             rootFolder.Priority = 100000;
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
             {
                 rootFolder
             };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseRemoveDuplicates { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 
@@ -65,24 +65,24 @@ namespace FileZapper.Test
             var loserFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "loser");
             loserFolder.Priority = 100000;
 
-            List<ZapperFile> files = new List<ZapperFile>();
-            string sFilePath = Path.Combine(importantFolder.FullPath, "alpha.txt");
-            files.Add(new ZapperFile { Directory = importantFolder.FullPath, FullPath = sFilePath, FileModified = DateTime.Now, ContentHash = "something" });
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
+            var files = new List<ZapperFile>();
+            string filePath = Path.Combine(importantFolder.FullPath, "alpha.txt");
+            files.Add(new ZapperFile { Directory = importantFolder.FullPath, FullPath = filePath, FileModified = DateTime.Now, ContentHash = "something" });
+            ZapperFileTestHelper.CreateTextFile(filePath, 5);
 
-            sFilePath = Path.Combine(loserFolder.FullPath, "bravo.txt");
-            files.Add(new ZapperFile { Directory = loserFolder.FullPath, FullPath = sFilePath, FileModified = DateTime.Now, ContentHash = "something" });
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
+            filePath = Path.Combine(loserFolder.FullPath, "bravo.txt");
+            files.Add(new ZapperFile { Directory = loserFolder.FullPath, FullPath = filePath, FileModified = DateTime.Now, ContentHash = "something" });
+            ZapperFileTestHelper.CreateTextFile(filePath, 5);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
             {
                 importantFolder,
                 loserFolder
             };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseRemoveDuplicates { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 

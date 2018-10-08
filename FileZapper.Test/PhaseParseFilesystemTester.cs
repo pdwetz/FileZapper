@@ -33,16 +33,16 @@ namespace FileZapper.Test
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseParseFilesystemTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
             rootFolder.Priority = 1;
-            string sKeeperFilePath = Path.Combine(rootFolder.FullPath, "keeper.txt");
-            ZapperFileTestHelper.CreateTextFile(sKeeperFilePath, 5);
-            string sUnwantedFilePath = Path.Combine(rootFolder.FullPath, "unwanted.foo");
-            ZapperFileTestHelper.CreateTextFile(sUnwantedFilePath, 5);
-            string sSmallFilePath = Path.Combine(rootFolder.FullPath, "small.txt");
-            ZapperFileTestHelper.CreateTextFile(sSmallFilePath, 1);
-            string sLargeFilePath = Path.Combine(rootFolder.FullPath, "large.txt");
-            ZapperFileTestHelper.CreateTextFile(sLargeFilePath, 10);
+            string keeperFilePath = Path.Combine(rootFolder.FullPath, "keeper.txt");
+            ZapperFileTestHelper.CreateTextFile(keeperFilePath, 5);
+            string unwantedFilePath = Path.Combine(rootFolder.FullPath, "unwanted.foo");
+            ZapperFileTestHelper.CreateTextFile(unwantedFilePath, 5);
+            string smallFilePath = Path.Combine(rootFolder.FullPath, "small.txt");
+            ZapperFileTestHelper.CreateTextFile(smallFilePath, 1);
+            string largeFilePath = Path.Combine(rootFolder.FullPath, "large.txt");
+            ZapperFileTestHelper.CreateTextFile(largeFilePath, 10);
 
-            FileZapperSettings settings = new FileZapperSettings
+            var settings = new FileZapperSettings
             {
                 IgnoreFilesBelowBytes = 1000,
                 IgnoreFilesOverBytes = 3000,
@@ -52,14 +52,14 @@ namespace FileZapper.Test
                 RootFolders = new List<ZapperFolder> { rootFolder }
             };
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseParseFilesystem { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 
             var processor = new ZapperProcessor(settings, allphases);
             phase.Process();
-            Assert.IsTrue(File.Exists(sKeeperFilePath));
-            Assert.IsFalse(File.Exists(sUnwantedFilePath));
+            Assert.IsTrue(File.Exists(keeperFilePath));
+            Assert.IsFalse(File.Exists(unwantedFilePath));
             Assert.AreEqual(1, processor.ZapperFiles.Count);
             Assert.AreEqual(1, processor.ZapperFilesDeleted.Count);
         }

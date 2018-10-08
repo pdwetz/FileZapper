@@ -33,21 +33,21 @@ namespace FileZapper.Test
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCleanupTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
-            string sUnwantedFolderName = "unwanted";
+            var unwantedFolderName = "unwanted";
             var wantedFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "wanted");
-            var unwantedFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, sUnwantedFolderName);
+            var unwantedFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, unwantedFolderName);
 
-            FileZapperSettings settings = new FileZapperSettings
+            var settings = new FileZapperSettings
             {
-                UnwantedFolders = new string[] { sUnwantedFolderName }
+                UnwantedFolders = new string[] { unwantedFolderName }
             };
-            List<ZapperFolder> folders = new List<ZapperFolder>
+            var folders = new List<ZapperFolder>
             {
                 rootFolder
             };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCleanup { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 

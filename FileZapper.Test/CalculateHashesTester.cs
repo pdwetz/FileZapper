@@ -32,35 +32,35 @@ namespace FileZapper.Test
         {
             _rootFolder = ZapperFileTestHelper.GetTestFileRoot();
 
-            string sFilePath = Path.Combine(_rootFolder.FullPath, "alpha.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 10);
+            string filePath = Path.Combine(_rootFolder.FullPath, "alpha.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 10);
 
-            sFilePath = Path.Combine(_rootFolder.FullPath, "bravo.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 10);
+            filePath = Path.Combine(_rootFolder.FullPath, "bravo.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 10);
         }
 
         [Test]
         public void calculate_hash_single_file()
         {
-            string sFilePath = Path.Combine(_rootFolder.FullPath, "alpha.txt");
-            string sHash = PhaseCalculateHashes.CalculateMD5Hash(sFilePath).Result;
-            Assert.That(sHash, Is.Not.Null.And.Not.Empty);
-            System.Diagnostics.Trace.WriteLine("Hash for " + sFilePath + ": " + sHash);
+            string filePath = Path.Combine(_rootFolder.FullPath, "alpha.txt");
+            string hash = PhaseCalculateHashes.CalculateMD5Hash(filePath).Result;
+            Assert.That(hash, Is.Not.Null.And.Not.Empty);
+            System.Diagnostics.Trace.WriteLine($"Hash for {filePath}: {hash}");
         }
 
         [Test]
         public void calculate_hash_duplicate_files()
         {
-            string sFilePath = Path.Combine(_rootFolder.FullPath, "alpha.txt");
-            string sHashAlpha = PhaseCalculateHashes.CalculateMD5Hash(sFilePath).Result;
-            Assert.That(sHashAlpha, Is.Not.Null.And.Not.Empty);
-            System.Diagnostics.Trace.WriteLine("Hash for " + sFilePath + ": " + sHashAlpha);
+            string filePath = Path.Combine(_rootFolder.FullPath, "alpha.txt");
+            string hashAlpha = PhaseCalculateHashes.CalculateMD5Hash(filePath).Result;
+            Assert.That(hashAlpha, Is.Not.Null.And.Not.Empty);
+            System.Diagnostics.Trace.WriteLine($"Hash for {filePath}: {hashAlpha}");
 
-            sFilePath = Path.Combine(_rootFolder.FullPath, "bravo.txt");
-            string sHashBravo = PhaseCalculateHashes.CalculateMD5Hash(sFilePath).Result;
-            Assert.That(sHashBravo, Is.Not.Null.And.Not.Empty);
+            filePath = Path.Combine(_rootFolder.FullPath, "bravo.txt");
+            string hashBravo = PhaseCalculateHashes.CalculateMD5Hash(filePath).Result;
+            Assert.That(hashBravo, Is.Not.Null.And.Not.Empty);
 
-            Assert.AreEqual(sHashAlpha, sHashBravo);
+            Assert.AreEqual(hashAlpha, hashBravo);
         }
     }
 }

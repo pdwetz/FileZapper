@@ -28,44 +28,44 @@ namespace FileZapper.Test
 
         public static ZapperFolder GetTestFileRoot()
         {
-            string sPath = SetupFolder(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TestFiles");
-            return new ZapperFolder { FullPath = sPath };
+            string folderPath = SetupFolder(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TestFiles");
+            return new ZapperFolder { FullPath = folderPath };
         }
 
-        public static ZapperFolder GetTestFileSubfolder(string sName)
+        public static ZapperFolder GetTestFileSubfolder(string name)
         {
             string sParentPath = GetTestFileRoot().FullPath;
-            string sPath = SetupFolder(sParentPath, sName);
-            return new ZapperFolder { FullPath = sPath };
+            string folderPath = SetupFolder(sParentPath, name);
+            return new ZapperFolder { FullPath = folderPath };
         }
 
-        public static ZapperFolder GetTestFileSubfolder(string sParentPath, string sName)
+        public static ZapperFolder GetTestFileSubfolder(string parentPath, string name)
         {
-            string sPath = SetupFolder(sParentPath, sName);
-            return new ZapperFolder { FullPath = sPath };
+            string folderPath = SetupFolder(parentPath, name);
+            return new ZapperFolder { FullPath = folderPath };
         }
 
-        public static string SetupFolder(string sParentPath, string sName)
+        public static string SetupFolder(string parentPath, string name)
         {
-            string sPath = Path.Combine(sParentPath, sName);
-            if (!Directory.Exists(sPath))
+            string folderPath = Path.Combine(parentPath, name);
+            if (!Directory.Exists(folderPath))
             {
-                Directory.CreateDirectory(sPath);
+                Directory.CreateDirectory(folderPath);
             }
-            return sPath;
+            return folderPath;
         }
 
-        public static void CreateTextFile(string sFilePath, long fillerlines, string sFillerText = FillerText)
+        public static void CreateTextFile(string filePath, long fillerlines, string fillerText = FillerText)
         {
-            if (File.Exists(sFilePath))
+            if (File.Exists(filePath))
             {
                 return;
             }
-            using (var stream = File.CreateText(sFilePath))
+            using (var stream = File.CreateText(filePath))
             {
                 for (long i = 0; i < fillerlines; i++)
                 {
-                    stream.Write(sFillerText);
+                    stream.Write(fillerText);
                 }
                 stream.Flush();
             }

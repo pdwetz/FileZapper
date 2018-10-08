@@ -33,7 +33,7 @@ namespace FileZapper.Test
         [SetUp]
         public void SetUp()
         {
-            FileZapperSettings settings = new FileZapperSettings
+            var settings = new FileZapperSettings
             {
                 IgnoreFilesBelowBytes = 0,
                 IgnoreFilesOverBytes = long.MaxValue,
@@ -42,7 +42,7 @@ namespace FileZapper.Test
                 UnwantedFolders = new string[] { },
                 RootFolders = new List<ZapperFolder> { new ZapperFolder { FullPath = "test path 1", Priority = 150 } }
             };
-            List<IZapperPhase> allphases = new List<IZapperPhase>
+            var allphases = new List<IZapperPhase>
             {
                 new TestPhase { PhaseOrder = 1, Name = "Alpha", IsInitialPhase = true },
                 new TestPhase { PhaseOrder = 2, Name = "Bravo" },
@@ -77,8 +77,8 @@ namespace FileZapper.Test
         {
             string logPathResult = _processor.LogResults(TestContext.CurrentContext.TestDirectory);
             Assert.AreEqual(TestContext.CurrentContext.TestDirectory, logPathResult);
-            string sFilePath = Path.Combine(logPathResult, "zappersessions.csv");
-            Assert.IsTrue(File.Exists(sFilePath));
+            string filePath = Path.Combine(logPathResult, "zappersessions.csv");
+            Assert.IsTrue(File.Exists(filePath));
         }
     }
 

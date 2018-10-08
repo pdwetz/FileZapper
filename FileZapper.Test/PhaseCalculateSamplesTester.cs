@@ -33,31 +33,31 @@ namespace FileZapper.Test
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateSamplesTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
-            List<ZapperFile> files = new List<ZapperFile>();
+            var files = new List<ZapperFile>();
 
-            string sFilePath = Path.Combine(rootFolder.FullPath, "alpha.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
-            var alpha = new ZapperFile(sFilePath);
+            string filePath = Path.Combine(rootFolder.FullPath, "alpha.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50);
+            var alpha = new ZapperFile(filePath);
             files.Add(alpha);
 
-            sFilePath = Path.Combine(rootFolder.FullPath, "bravo.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
-            var bravo = new ZapperFile(sFilePath);
+            filePath = Path.Combine(rootFolder.FullPath, "bravo.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50);
+            var bravo = new ZapperFile(filePath);
             files.Add(bravo);
 
-            sFilePath = Path.Combine(rootFolder.FullPath, "charlie.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50, ZapperFileTestHelper.AltFillerText);
-            var charlie = new ZapperFile(sFilePath);
+            filePath = Path.Combine(rootFolder.FullPath, "charlie.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50, ZapperFileTestHelper.AltFillerText);
+            var charlie = new ZapperFile(filePath);
             files.Add(charlie);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
             {
                 rootFolder
             };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCalculateSamples { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 
@@ -84,26 +84,26 @@ namespace FileZapper.Test
             var alphaFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Alpha");
             var bravoFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Bravo");
 
-            List<ZapperFile> files = new List<ZapperFile>();
+            var files = new List<ZapperFile>();
 
-            string sFilePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
-            var alpha = new ZapperFile(sFilePath);
+            string filePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50);
+            var alpha = new ZapperFile(filePath);
             files.Add(alpha);
 
-            sFilePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
-            var bravo = new ZapperFile(sFilePath);
+            filePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50);
+            var bravo = new ZapperFile(filePath);
             files.Add(bravo);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
             {
                 rootFolder
             };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCalculateSamples { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 
@@ -129,26 +129,26 @@ namespace FileZapper.Test
             var alphaFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Alpha");
             var bravoFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Bravo");
 
-            List<ZapperFile> files = new List<ZapperFile>();
+            var files = new List<ZapperFile>();
 
-            string sFilePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
-            var alpha = new ZapperFile(sFilePath);
+            string filePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50);
+            var alpha = new ZapperFile(filePath);
             files.Add(alpha);
 
-            sFilePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
-            var bravo = new ZapperFile(sFilePath);
+            filePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50);
+            var bravo = new ZapperFile(filePath);
             files.Add(bravo);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
             {
                 rootFolder
             };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCalculateSamples { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 
@@ -176,27 +176,27 @@ namespace FileZapper.Test
             var bravoFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "Bravo");
             bravoFolder.Priority = 100000;
 
-            List<ZapperFile> files = new List<ZapperFile>();
+            var files = new List<ZapperFile>();
 
-            string sFilePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
-            var alpha = new ZapperFile(sFilePath);
+            string filePath = Path.Combine(alphaFolder.FullPath, "alpha.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50);
+            var alpha = new ZapperFile(filePath);
             files.Add(alpha);
 
-            sFilePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 50);
-            var bravo = new ZapperFile(sFilePath);
+            filePath = Path.Combine(bravoFolder.FullPath, "bravo.txt");
+            ZapperFileTestHelper.CreateTextFile(filePath, 50);
+            var bravo = new ZapperFile(filePath);
             files.Add(bravo);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
             {
                 alphaFolder,
                 bravoFolder
             };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCalculateSamples { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 

@@ -30,8 +30,6 @@ namespace FileZapper
 
         static void Main(string[] args)
         {
-            // TODO Walk through all files and do cleanup, make notes for future changes, etc.
-
             Console.Title = "FileZapper";
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

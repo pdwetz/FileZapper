@@ -50,12 +50,15 @@ namespace FileZapper.Core.Engine
 
             if (phases != null)
             {
-                foreach (var phase in phases) { phase.ZapperProcessor = this; }
+                foreach (var phase in phases)
+                {
+                    phase.ZapperProcessor = this;
+                }
                 _phases = phases.OrderBy(x => x.PhaseOrder);
             }
             else
             {
-                List<IZapperPhase> allphases = new List<IZapperPhase>();
+                var allphases = new List<IZapperPhase>();
                 allphases.Add(new PhaseCleanup { PhaseOrder = 1, ZapperProcessor = this, IsInitialPhase = true });
                 allphases.Add(new PhaseParseFilesystem { PhaseOrder = 2, ZapperProcessor = this });
                 allphases.Add(new PhaseCalculateSamples { PhaseOrder = 3, ZapperProcessor = this });
@@ -124,12 +127,12 @@ namespace FileZapper.Core.Engine
             }
             _log.Information("Logging results to {LogPath}", logPath);
             string filePath = Path.Combine(logPath, LogFilenameSessions);
-            bool bSessionFileExists = File.Exists(filePath);
+            bool sessionFileExists = File.Exists(filePath);
             using (var textWriter = File.AppendText(filePath))
             {
                 using (var writer = new CsvWriter(textWriter))
                 {
-                    if (!bSessionFileExists)
+                    if (!sessionFileExists)
                     {
                         writer.WriteHeader<ZapperSession>();
                     }
