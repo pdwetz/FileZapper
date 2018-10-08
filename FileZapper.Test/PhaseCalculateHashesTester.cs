@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 */
 using System.Collections.Generic;
 using System.IO;
-using FileZapper.Core.Configuration;
+using FileZapper.Core;
 using FileZapper.Core.Data;
 using FileZapper.Core.Engine;
 using NUnit.Framework;
@@ -33,21 +33,23 @@ namespace FileZapper.Test
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateHashesTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
-            List<ZapperFile> files = new List<ZapperFile>();
-            string sFilePath = Path.Combine(rootFolder.FullPath, "alpha.txt");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt", SampleHash = "1" });
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
+            var files = new List<ZapperFile>();
+            string filePath = Path.Combine(rootFolder.FullPath, "alpha.txt");
+            files.Add(new ZapperFile { FullPath = filePath, Size = 500, Extension = ".txt", SampleHash = "1" });
+            ZapperFileTestHelper.CreateTextFile(filePath, 5);
 
-            sFilePath = Path.Combine(rootFolder.FullPath, "bravo.txt");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt", SampleHash = "1" });
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
+            filePath = Path.Combine(rootFolder.FullPath, "bravo.txt");
+            files.Add(new ZapperFile { FullPath = filePath, Size = 500, Extension = ".txt", SampleHash = "1" });
+            ZapperFileTestHelper.CreateTextFile(filePath, 5);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCalculateHashes { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 
@@ -71,20 +73,22 @@ namespace FileZapper.Test
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateHashesTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
-            List<ZapperFile> files = new List<ZapperFile>();
+            var files = new List<ZapperFile>();
 
-            string sFilePath = Path.Combine(rootFolder.FullPath, "charlie.txt");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 999, Extension = ".txt", SampleHash = "2" });
+            string filePath = Path.Combine(rootFolder.FullPath, "charlie.txt");
+            files.Add(new ZapperFile { FullPath = filePath, Size = 999, Extension = ".txt", SampleHash = "2" });
 
-            sFilePath = Path.Combine(rootFolder.FullPath, "delta.foo");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 999, Extension = ".foo", SampleHash = "2" });
+            filePath = Path.Combine(rootFolder.FullPath, "delta.foo");
+            files.Add(new ZapperFile { FullPath = filePath, Size = 999, Extension = ".foo", SampleHash = "2" });
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCalculateHashes { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 
@@ -107,21 +111,23 @@ namespace FileZapper.Test
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCalculateHashesTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
-            List<ZapperFile> files = new List<ZapperFile>();
-            string sFilePath = Path.Combine(rootFolder.FullPath, "alpha.txt");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt" });
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
+            var files = new List<ZapperFile>();
+            string filePath = Path.Combine(rootFolder.FullPath, "alpha.txt");
+            files.Add(new ZapperFile { FullPath = filePath, Size = 500, Extension = ".txt" });
+            ZapperFileTestHelper.CreateTextFile(filePath, 5);
 
-            sFilePath = Path.Combine(rootFolder.FullPath, "bravo.txt");
-            files.Add(new ZapperFile { FullPath = sFilePath, Size = 500, Extension = ".txt" });
-            ZapperFileTestHelper.CreateTextFile(sFilePath, 5);
+            filePath = Path.Combine(rootFolder.FullPath, "bravo.txt");
+            files.Add(new ZapperFile { FullPath = filePath, Size = 500, Extension = ".txt" });
+            ZapperFileTestHelper.CreateTextFile(filePath, 5);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            var settings = new FileZapperSettings();
+            var folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCalculateHashes { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 

@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,10 +21,8 @@ namespace FileZapper.Core.Engine
 {
     public class FileZapperUpdateDictionaryFailureException : Exception
     {
-        protected const string MessageFormat = "Dictionary {0} unable to update key '{1}'";
-
-        public FileZapperUpdateDictionaryFailureException(string sDictionaryName, string sKey)
-            : base(string.Format(MessageFormat, sDictionaryName, sKey))
-        {}
+        public FileZapperUpdateDictionaryFailureException(string dictionaryName, string key)
+            : base($"Dictionary {dictionaryName} unable to update key '{key}'")
+        { }
     }
 }

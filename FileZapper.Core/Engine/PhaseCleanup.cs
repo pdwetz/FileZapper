@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2017 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,28 +19,27 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using FileZapper.Core.Utilities;
-using log4net;
-using Microsoft.VisualBasic.FileIO;
+using Serilog;
 
 namespace FileZapper.Core.Engine
 {
     public class PhaseCleanup : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseCleanup));
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "Clean up";
         public bool IsInitialPhase { get; set; }
+
+        private readonly ILogger _log;
 
         public PhaseCleanup()
         {
-            Name = "Clean up";
+            _log = Log.ForContext<PhaseCleanup>();
         }
 
         public void Process()
         {
-            _log.Info(Name);
+            _log.Information(Name);
 
             if (ZapperProcessor == null) { throw new Exception("ZapperProcessor required"); }
             if (ZapperProcessor.Settings == null) { throw new Exception("ZapperProcessor.Settings required"); }
@@ -48,13 +47,13 @@ namespace FileZapper.Core.Engine
 
             if (!ZapperProcessor.Settings.UnwantedFolders.Any())
             {
-                System.Diagnostics.Trace.WriteLine("No unwanted folder names, skipping phase: " + Name);
+                _log.Verbose("No unwanted folder names, skipping phase");
                 return;
             }
-            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.fff")}: Deleting unwanted directories from file system...");
+            _log.Information("Deleting unwanted directories from file system...");
             foreach (var root in ZapperProcessor.Settings.RootFolders)
             {
-                var dirs = Directory.EnumerateDirectories(root.FullPath, "*.*", System.IO.SearchOption.AllDirectories);
+                var dirs = Directory.EnumerateDirectories(root.FullPath, "*.*", SearchOption.AllDirectories);
                 try
                 {
                     Parallel.ForEach(dirs, dir =>
@@ -65,7 +64,7 @@ namespace FileZapper.Core.Engine
                             DirectoryInfo d = new DirectoryInfo(dir);
                             if (ZapperProcessor.Settings.UnwantedFolders.Contains(d.Name))
                             {
-                                FileSystem.DeleteDirectory(dir, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                                Directory.Delete(dir);
                             }
                         }
                     });
@@ -74,7 +73,7 @@ namespace FileZapper.Core.Engine
                 {
                     ae.Handle(e =>
                     {
-                        Exceptioneer.Log(_log, e);
+                        _log.Error(e, "Error during cleanup");
                         return true;
                     });
                 }

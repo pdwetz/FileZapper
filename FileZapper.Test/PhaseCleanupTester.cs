@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 */
 using System.Collections.Generic;
 using System.IO;
-using FileZapper.Core.Configuration;
+using FileZapper.Core;
 using FileZapper.Core.Data;
 using FileZapper.Core.Engine;
 using NUnit.Framework;
@@ -28,22 +28,26 @@ namespace FileZapper.Test
     public class PhaseCleanupTester
     {
         [Test]
-        public void process()
+        public void process_cleanup()
         {
             var rootFolder = ZapperFileTestHelper.GetTestFileSubfolder("PhaseCleanupTester");
             System.Diagnostics.Trace.WriteLine(rootFolder.FullPath);
 
-            string sUnwantedFolderName = "unwanted";
+            var unwantedFolderName = "unwanted";
             var wantedFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, "wanted");
-            var unwantedFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, sUnwantedFolderName);
+            var unwantedFolder = ZapperFileTestHelper.GetTestFileSubfolder(rootFolder.FullPath, unwantedFolderName);
 
-            FileZapperSettings settings = new FileZapperSettings();
-            settings.UnwantedFolders = new string[] { sUnwantedFolderName };
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(rootFolder);
+            var settings = new FileZapperSettings
+            {
+                UnwantedFolders = new string[] { unwantedFolderName }
+            };
+            var folders = new List<ZapperFolder>
+            {
+                rootFolder
+            };
             settings.RootFolders = folders;
 
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
+            var allphases = new List<IZapperPhase>();
             var phase = new PhaseCleanup { PhaseOrder = 1, IsInitialPhase = true };
             allphases.Add(phase);
 

@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2017 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,9 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FileZapper.Core.Data;
-using FileZapper.Core.Utilities;
-using log4net;
-using Microsoft.VisualBasic.FileIO;
+using Serilog;
 
 namespace FileZapper.Core.Engine
 {
@@ -31,23 +29,24 @@ namespace FileZapper.Core.Engine
     /// </summary>
     public class PhaseRemoveDuplicates : IZapperPhase
     {
-        private readonly ILog _log = LogManager.GetLogger(typeof(PhaseRemoveDuplicates));
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = "Remove duplicate files";
         public bool IsInitialPhase { get; set; }
+
+        private readonly ILogger _log;
 
         public PhaseRemoveDuplicates()
         {
-            Name = "Remove duplicate files";
+            _log = Log.ForContext<PhaseRemoveDuplicates>();
         }
 
         public void Process()
         {
-            _log.Info(Name);
+            _log.Information(Name);
             var files = ZapperProcessor.ZapperFiles.Values
                 .Where(x => !string.IsNullOrWhiteSpace(x.ContentHash) && !x.ContentHash.Equals("invalid", StringComparison.InvariantCultureIgnoreCase));
-            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss.fff")}: Calc file scores");
+            _log.Information("Calculating file scores");
             try
             {
                 Parallel.ForEach(files, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, zfile =>
@@ -59,17 +58,22 @@ namespace FileZapper.Core.Engine
             {
                 ae.Handle(e =>
                 {
-                    Exceptioneer.Log(_log, e);
+                    _log.Error(e, "Error while calculating scores");
                     return true;
                 });
             }
 
-            Console.WriteLine("{0}: Delete losers", DateTime.Now.ToString("HH:mm:ss.fff"));
             var dupes = (from z in files
                          group z by z.ContentHash into g
                          select new { ContentHash = g.Key, Count = g.Count(), Files = g })
                          .Where(x => x.Count > 1);
+            if (!dupes.Any())
+            {
+                _log.Information("No duplicates found");
+                return;
+            }
 
+            _log.Information("Deleting duplicates");
             try
             {
                 Parallel.ForEach(dupes, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, dupe =>
@@ -78,20 +82,19 @@ namespace FileZapper.Core.Engine
                                           orderby z.Score descending
                                           select z).Skip(1);
 
-                    // Not parallel; for large workloads this spammed the threadpool, even when limited to logical processor count
+                    // Not parallel; for large workloads this spammed the thread pool, even when limited to logical processor count
                     foreach (var dead in deadmenwalking)
                     {
                         if (File.Exists(dead.FullPath))
                         {
-                            FileSystem.DeleteFile(dead.FullPath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                            File.Delete(dead.FullPath);
                         }
                         ZapperFileDeleted zfiledeleted = new ZapperFileDeleted(dead, ZapperProcessor.ZapperSession.Id);
                         if (!ZapperProcessor.ZapperFilesDeleted.TryAdd(zfiledeleted.FullPath, zfiledeleted))
                         {
                             throw new FileZapperAddToDictionaryFailureException("ZapperFilesDeleted", zfiledeleted.FullPath);
                         }
-                        ZapperFile killed;
-                        if (!ZapperProcessor.ZapperFiles.TryRemove(dead.FullPath, out killed))
+                        if (!ZapperProcessor.ZapperFiles.TryRemove(dead.FullPath, out ZapperFile killed))
                         {
                             throw new FileZapperRemoveFromDictionaryFailureException("ZapperFiles", dead.FullPath);
                         }
@@ -102,7 +105,7 @@ namespace FileZapper.Core.Engine
             {
                 ae.Handle(e =>
                 {
-                    Exceptioneer.Log(_log, e);
+                    _log.Error(e, "Error during file deletion");
                     return true;
                 });
             }
@@ -115,14 +118,14 @@ namespace FileZapper.Core.Engine
         {
             var root = ZapperProcessor.Settings.RootFolders.FirstOrDefault(x => zfile.Directory.StartsWith(x.FullPath, StringComparison.OrdinalIgnoreCase));
             // Assumes "core" folders have 6 figure priority
-            int iRootScore = root == null ? 0 : root.Priority;
+            int rootScore = root == null ? 0 : root.Priority;
             // Assumes named folders should take priority over misc folders
-            int iNotMiscScore = zfile.Directory.Contains("misc") || zfile.Directory.Contains("unfiltered") ? 0 : 10000;
+            int notMiscScore = zfile.Directory.Contains("misc") || zfile.Directory.Contains("unfiltered") ? 0 : 10000;
             // Assumes deeply nested is better than not
-            int iNestScore = (zfile.Directory.Count(x => x == '\\') + 1) * 1000;
+            int nestScore = (zfile.Directory.Count(x => x == '\\') + 1) * 1000;
             // Assumes older is better
-            int iTimeScore = Convert.ToInt32((DateTime.Now - (zfile.FileModified ?? DateTime.Now)).TotalDays / 365);
-            zfile.Score = iRootScore + iNotMiscScore + iNestScore + iTimeScore;
+            int timeScore = Convert.ToInt32((DateTime.Now - (zfile.FileModified ?? DateTime.Now)).TotalDays / 365);
+            zfile.Score = rootScore + notMiscScore + nestScore + timeScore;
         }
     }
 }

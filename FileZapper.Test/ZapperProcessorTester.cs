@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2014 Peter Wetzel
+    Copyright (C) 2018 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,14 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using FileZapper.Core.Configuration;
+using FileZapper.Core;
 using FileZapper.Core.Data;
 using FileZapper.Core.Engine;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace FileZapper.Test
 {
@@ -34,15 +33,21 @@ namespace FileZapper.Test
         [SetUp]
         public void SetUp()
         {
-            FileZapperSettings settings = new FileZapperSettings();
-            List<ZapperFolder> folders = new List<ZapperFolder>();
-            folders.Add(new ZapperFolder { FullPath = "test path 1", Priority = 150 });
-            settings.RootFolders = folders;
-
-            List<IZapperPhase> allphases = new List<IZapperPhase>();
-            allphases.Add(new TestPhase { PhaseOrder = 1, Name = "Alpha", IsInitialPhase = true });
-            allphases.Add(new TestPhase { PhaseOrder = 2, Name = "Bravo" });
-            allphases.Add(new TestPhase { PhaseOrder = 3, Name = "Charlie" });
+            var settings = new FileZapperSettings
+            {
+                IgnoreFilesBelowBytes = 0,
+                IgnoreFilesOverBytes = long.MaxValue,
+                SkippedExtensions = new string[] { },
+                UnwantedExtensions = new string[] { },
+                UnwantedFolders = new string[] { },
+                RootFolders = new List<ZapperFolder> { new ZapperFolder { FullPath = "test path 1", Priority = 150 } }
+            };
+            var allphases = new List<IZapperPhase>
+            {
+                new TestPhase { PhaseOrder = 1, Name = "Alpha", IsInitialPhase = true },
+                new TestPhase { PhaseOrder = 2, Name = "Bravo" },
+                new TestPhase { PhaseOrder = 3, Name = "Charlie" }
+            };
 
             _processor = new ZapperProcessor(settings, allphases);
         }
@@ -72,8 +77,8 @@ namespace FileZapper.Test
         {
             string logPathResult = _processor.LogResults(TestContext.CurrentContext.TestDirectory);
             Assert.AreEqual(TestContext.CurrentContext.TestDirectory, logPathResult);
-            string sFilePath = Path.Combine(logPathResult, "zappersessions.csv");
-            Assert.IsTrue(File.Exists(sFilePath));
+            string filePath = Path.Combine(logPathResult, "zappersessions.csv");
+            Assert.IsTrue(File.Exists(filePath));
         }
     }
 

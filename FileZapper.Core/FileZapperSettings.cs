@@ -15,14 +15,21 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-using System;
+using System.Collections.Generic;
+using FileZapper.Core.Data;
 
-namespace FileZapper.Core.Engine
+namespace FileZapper.Core
 {
-    public class FileZapperRemoveFromDictionaryFailureException : Exception
+    public class FileZapperSettings
     {
-        public FileZapperRemoveFromDictionaryFailureException(string dictionaryName, string key)
-            : base($"Dictionary {dictionaryName} unable to remove key '{key}'")
-        { }
+        public virtual string Hasher { get; set; } = "Farmhash";
+        public virtual bool DupeCheckIgnoresHierarchy { get; set; }
+        public virtual long IgnoreFilesBelowBytes { get; set; }
+        public virtual long IgnoreFilesOverBytes { get; set; }
+        public virtual IEnumerable<string> SkippedExtensions { get; set; }
+        public virtual IEnumerable<string> UnwantedExtensions { get; set; }
+        public virtual IEnumerable<string> UnwantedFolders { get; set; }
+
+        public List<ZapperFolder> RootFolders { get; set; }
     }
 }

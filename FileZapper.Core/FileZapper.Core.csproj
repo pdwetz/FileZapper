@@ -1,92 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D77746B1-E1D8-4028-AFC2-D2DEE4470E74}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FileZapper.Core</RootNamespace>
-    <AssemblyName>FileZapper.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>3.0.0</Version>
+    <Authors>Peter Wetzel</Authors>
+    <Copyright>(c) 2018 Peter Wetzel</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="CsvHelper, Version=4.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
-      <HintPath>..\packages\CsvHelper.4.0.3\lib\net45\CsvHelper.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="CsvHelper" Version="7.1.1" />
+    <PackageReference Include="Farmhash.Sharp" Version="0.7.0" />
+    <PackageReference Include="Serilog" Version="2.7.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Configuration\ZapperFolderConfigCollection.cs" />
-    <Compile Include="Configuration\ZapperFolderConfigElement.cs" />
-    <Compile Include="Configuration\ZapperFolderConfigSection.cs" />
-    <Compile Include="Configuration\FileZapperSettings.cs" />
-    <Compile Include="Data\ZapperFileMap.cs" />
-    <Compile Include="Data\ZapperSessionPhase.cs" />
-    <Compile Include="Data\ZapperFileDeleted.cs" />
-    <Compile Include="Data\ZapperSession.cs" />
-    <Compile Include="Exceptions\FileZapperRemoveFromDictionaryFailureException.cs" />
-    <Compile Include="Exceptions\FileZapperUpdateDictionaryFailureException.cs" />
-    <Compile Include="Exceptions\FileZapperAddToDictionaryFailureException.cs" />
-    <Compile Include="Engine\IZapperPhase.cs" />
-    <Compile Include="Engine\PhaseCalculateSamples.cs" />
-    <Compile Include="Engine\PhaseCalculateHashes.cs" />
-    <Compile Include="Engine\PhaseCleanup.cs" />
-    <Compile Include="Engine\PhaseParseFilesystem.cs" />
-    <Compile Include="Engine\PhaseRemoveDuplicates.cs" />
-    <Compile Include="Engine\ZapperProcessor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Data\ZapperFile.cs" />
-    <Compile Include="Data\ZapperFolder.cs" />
-    <Compile Include="Utilities\ByteCompare.cs" />
-    <Compile Include="Utilities\Crc32.cs" />
-    <Compile Include="Utilities\Exceptioneer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
