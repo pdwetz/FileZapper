@@ -66,12 +66,12 @@ namespace FileZapper.Core.Engine
             });
         }
 
-        public static async Task<string> CalculateMD5Hash(string filePath)
+        public static async Task<string> CalculateMD5Hash(string filePath, int bufferSize = 1_200_000)
         {
             using (MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider())
             {
                 byte[] hashvalue;
-                using (var stream = new BufferedStream(File.OpenRead(filePath), 1200000))
+                using (var stream = new BufferedStream(File.OpenRead(filePath), bufferSize))
                 {
                     await stream.FlushAsync();
                     hashvalue = hasher.ComputeHash(stream);
@@ -80,12 +80,12 @@ namespace FileZapper.Core.Engine
             }
         }
 
-        public static async Task<string> CalculateCrcHash(string filePath)
+        public static async Task<string> CalculateCrcHash(string filePath, int bufferSize = 1_200_000)
         {
             using (Crc32 hasher = new Crc32())
             {
                 byte[] hashvalue;
-                using (var stream = new BufferedStream(File.OpenRead(filePath), 1200000))
+                using (var stream = new BufferedStream(File.OpenRead(filePath), bufferSize))
                 {
                     await stream.FlushAsync();
                     hashvalue = hasher.ComputeHash(stream);
@@ -94,10 +94,17 @@ namespace FileZapper.Core.Engine
             }
         }
 
-        public static ulong CalculateFarmhash(string filePath)
+        public static async Task<string> CalculateFarmhashAsync(string filePath)
         {
-            var bytes = File.ReadAllBytes(filePath);
-            return Farmhash.Sharp.Farmhash.Hash64(bytes, bytes.Length);
+            var bytes = await File.ReadAllBytesAsync(filePath);
+            return Farmhash.Sharp.Farmhash.Hash64(bytes, bytes.Length).ToString();
+        }
+
+        public static string CalculateFarmhash(string filePath)
+        {
+            // Can't use Span in async methods
+            ReadOnlySpan<byte> sp = File.ReadAllBytes(filePath);
+            return Farmhash.Sharp.Farmhash.Hash64(sp).ToString();
         }
 
         public async void Hashify(ZapperFile zfile)
@@ -119,7 +126,7 @@ namespace FileZapper.Core.Engine
                         zfile.ContentHash = await CalculateCrcHash(zfile.FullPath);
                         break;
                     default:
-                        zfile.ContentHash = CalculateFarmhash(zfile.FullPath).ToString();
+                        zfile.ContentHash = await CalculateFarmhashAsync(zfile.FullPath);
                         break;
                 }
                 hashtimer.Stop();
