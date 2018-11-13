@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileZapper.Core", "FileZapper.Core\FileZapper.Core.csproj", "{22915517-067C-4DCC-A5E7-8E71B34090F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileZapper.Core", "FileZapper.Core\FileZapper.Core.csproj", "{22915517-067C-4DCC-A5E7-8E71B34090F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileZapper.Test", "FileZapper.Test\FileZapper.Test.csproj", "{E79C9035-3CD5-4500-9673-94AE6344EBAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileZapper.Test", "FileZapper.Test\FileZapper.Test.csproj", "{E79C9035-3CD5-4500-9673-94AE6344EBAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileZapper", "FileZapper\FileZapper.csproj", "{E8B0F0B5-DCF5-4749-BAC0-89466DE24B77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileZapper", "FileZapper\FileZapper.csproj", "{E8B0F0B5-DCF5-4749-BAC0-89466DE24B77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileZapper.Benchmark", "FileZapper.Benchmark\FileZapper.Benchmark.csproj", "{C92D8878-FE47-421C-B24B-9B2C380C9687}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,22 @@ Global
 		{E8B0F0B5-DCF5-4749-BAC0-89466DE24B77}.Release|x64.Build.0 = Release|Any CPU
 		{E8B0F0B5-DCF5-4749-BAC0-89466DE24B77}.Release|x86.ActiveCfg = Release|Any CPU
 		{E8B0F0B5-DCF5-4749-BAC0-89466DE24B77}.Release|x86.Build.0 = Release|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Debug|x64.Build.0 = Debug|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Debug|x86.Build.0 = Debug|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Release|x64.ActiveCfg = Release|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Release|x64.Build.0 = Release|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Release|x86.ActiveCfg = Release|Any CPU
+		{C92D8878-FE47-421C-B24B-9B2C380C9687}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
