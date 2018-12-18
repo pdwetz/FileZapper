@@ -22,8 +22,8 @@ namespace FileZapper.Core.Data
 {
     public class ZapperFile : IEquatable<ZapperFile>
     {
-        public const int DefaultSampleBytesOffset = 10240;
-        public const int DefaultSampleBytesSize = 1024;
+        public const int DefaultSampleBytesOffset = 10_000_000;
+        public const int DefaultSampleBytesSize = 10_000;
 
         public string FullPath { get; set; }
         public string Name { get; set; }
