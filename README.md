@@ -33,8 +33,11 @@ This was primarily a project to scratch an itch of mine and isn't particularly m
 - For small tests, it should run very quickly (a few seconds at most).
 
 # Release Notes
+Version 3.1.0.0
+- Now targets .Net Core 2.2
+
 Version 3.0.0.0
-- Library now targets netstandard 2.0, CLI and Test target .Net Core 2.1
+- Now targets .Net Core 2.1
 - Deletes are now final. No more recycle bin support.
 - Support for multiple hashing options. Defaults to Farmhash.
 - Logging now uses Serilog
