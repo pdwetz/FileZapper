@@ -3,13 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <FileVersion>3.1.0.0</FileVersion>
+    <FileVersion>3.2.0.0</FileVersion>
     <PackageProjectUrl>https://github.com/pdwetz/FileZapper</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/pdwetz/FileZapper/master/FileZapper/license.txt</PackageLicenseUrl>
     <Copyright>(c) 2018 Peter Wetzel</Copyright>
     <Company />
     <Authors>Peter Wetzel</Authors>
-    <Version>3.1.0</Version>
+    <Version>3.2.0</Version>
     <Description>Finds and removes duplicate files from specified folders</Description>
     <RepositoryUrl>https://github.com/pdwetz/FileZapper</RepositoryUrl>
   </PropertyGroup>
