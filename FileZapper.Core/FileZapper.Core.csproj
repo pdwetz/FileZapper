@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <Version>3.1.0</Version>
+    <Version>3.2.0</Version>
     <Authors>Peter Wetzel</Authors>
-    <Copyright>(c) 2018 Peter Wetzel</Copyright>
+    <Copyright>(c) 2019 Peter Wetzel</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="12.1.0" />
+    <PackageReference Include="CsvHelper" Version="12.1.1" />
     <PackageReference Include="Farmhash.Sharp" Version="0.7.0" />
     <PackageReference Include="Serilog" Version="2.7.1" />
   </ItemGroup>

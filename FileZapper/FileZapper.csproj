@@ -3,13 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
-    <FileVersion>3.1.0.0</FileVersion>
+    <FileVersion>3.2.0.0</FileVersion>
     <PackageProjectUrl>https://github.com/pdwetz/FileZapper</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.githubusercontent.com/pdwetz/FileZapper/master/FileZapper/license.txt</PackageLicenseUrl>
     <Copyright>(c) 2018 Peter Wetzel</Copyright>
     <Company />
     <Authors>Peter Wetzel</Authors>
-    <Version>3.1.0</Version>
+    <Version>3.2.0</Version>
     <Description>Finds and removes duplicate files from specified folders</Description>
     <RepositoryUrl>https://github.com/pdwetz/FileZapper</RepositoryUrl>
   </PropertyGroup>
@@ -19,8 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.3.0" />
-    <PackageReference Include="CsvHelper" Version="12.1.0" />
+    <PackageReference Include="CommandLineParser" Version="2.4.3" />
+    <PackageReference Include="CsvHelper" Version="12.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />

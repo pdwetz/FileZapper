@@ -29,6 +29,8 @@ namespace FileZapper.Core.Engine
 {
     public class PhaseCalculateHashes : IZapperPhase
     {
+        public const long MaxBytesFarmhash = 2_000_000_000;
+
         public ZapperProcessor ZapperProcessor { get; set; }
         public int PhaseOrder { get; set; }
         public string Name { get; set; } = "Calculate content hashes (this may take awhile)";
@@ -126,7 +128,15 @@ namespace FileZapper.Core.Engine
                         zfile.ContentHash = await CalculateCrcHash(zfile.FullPath);
                         break;
                     default:
-                        zfile.ContentHash = await CalculateFarmhashAsync(zfile.FullPath);
+                        if (zfile.Size > MaxBytesFarmhash)
+                        {
+                            _log.Information("Can't use Farmhash for file. Using MD5 as file {filepath} is {size} bytes and can't be over 2 GB.", zfile.FullPath, zfile.Size);
+                            zfile.ContentHash = await CalculateMD5Hash(zfile.FullPath);
+                        }
+                        else
+                        {
+                            zfile.ContentHash = await CalculateFarmhashAsync(zfile.FullPath);
+                        }
                         break;
                 }
                 hashtimer.Stop();
