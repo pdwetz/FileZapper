@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2018 Peter Wetzel
+    Copyright (C) 2020 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -72,13 +73,13 @@ namespace FileZapper.Core.Engine
         {
             try
             {
-                _log.Verbose("Current configuration settings: {@Settings}", Settings);
+                _log.ForContext(nameof(FileZapperSettings), Settings, true).Verbose("Current configuration settings");
                 ZapperSession.CurrentPhase = _phases.First(x => x.IsInitialPhase).PhaseOrder;
                 Process();
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Error encountered");
+                _log.Error(ex, "StartConsole: Error encountered");
             }
         }
 
@@ -130,36 +131,26 @@ namespace FileZapper.Core.Engine
             bool sessionFileExists = File.Exists(filePath);
             using (var textWriter = File.AppendText(filePath))
             {
-                using (var writer = new CsvWriter(textWriter))
+                using var writer = new CsvWriter(textWriter, CultureInfo.CurrentCulture);
+                if (!sessionFileExists)
                 {
-                    if (!sessionFileExists)
-                    {
-                        writer.WriteHeader<ZapperSession>();
-                    }
-                    writer.WriteRecord(ZapperSession);
+                    writer.WriteHeader<ZapperSession>();
                 }
+                writer.WriteRecord(ZapperSession);
             }
             if (ZapperFiles.Count > 0)
             {
                 filePath = Path.Combine(logPath, $"files-{ZapperSession.Id}.csv");
-                using (var textWriter = File.CreateText(filePath))
-                {
-                    using (var writer = new CsvWriter(textWriter))
-                    {
-                        writer.WriteRecords(ZapperFiles.Values);
-                    }
-                }
+                using var textWriter = File.CreateText(filePath);
+                using var writer = new CsvWriter(textWriter, CultureInfo.CurrentCulture);
+                writer.WriteRecords(ZapperFiles.Values);
             }
             if (ZapperFilesDeleted.Count > 0)
             {
                 filePath = Path.Combine(logPath, $"deleted-{ZapperSession.Id}.csv");
-                using (var textWriter = File.CreateText(filePath))
-                {
-                    using (var writer = new CsvWriter(textWriter))
-                    {
-                        writer.WriteRecords(ZapperFilesDeleted.Values);
-                    }
-                }
+                using var textWriter = File.CreateText(filePath);
+                using var writer = new CsvWriter(textWriter, CultureInfo.CurrentCulture);
+                writer.WriteRecords(ZapperFilesDeleted.Values);
             }
             return logPath;
         }

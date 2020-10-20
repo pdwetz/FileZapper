@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2018 Peter Wetzel
+    Copyright (C) 2020 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ namespace FileZapper.Core.Data
 
         public bool Equals(ZapperFile other)
         {
-            if (Object.ReferenceEquals(other, null)) { return false; }
+            if (other is null) { return false; }
             if (Object.ReferenceEquals(this, other)) { return true; }
             return
                 FullPath == other.FullPath
@@ -88,7 +88,7 @@ namespace FileZapper.Core.Data
 
         public bool EqualsIgnoreHash(ZapperFile other)
         {
-            if (Object.ReferenceEquals(other, null)) { return false; }
+            if (other is null) { return false; }
             if (Object.ReferenceEquals(this, other)) { return true; }
 
             return
