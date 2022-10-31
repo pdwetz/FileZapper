@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2018 Peter Wetzel
+    Copyright (C) 2022 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -70,30 +70,26 @@ namespace FileZapper.Core.Engine
 
         public static async Task<string> CalculateMD5Hash(string filePath, int bufferSize = 1_200_000)
         {
-            using (MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider())
+            using var hasher = MD5.Create();
+            byte[] hashvalue;
+            using (var stream = new BufferedStream(File.OpenRead(filePath), bufferSize))
             {
-                byte[] hashvalue;
-                using (var stream = new BufferedStream(File.OpenRead(filePath), bufferSize))
-                {
-                    await stream.FlushAsync();
-                    hashvalue = hasher.ComputeHash(stream);
-                }
-                return BitConverter.ToString(hashvalue);
+                await stream.FlushAsync();
+                hashvalue = hasher.ComputeHash(stream);
             }
+            return BitConverter.ToString(hashvalue);
         }
 
         public static async Task<string> CalculateCrcHash(string filePath, int bufferSize = 1_200_000)
         {
-            using (Crc32 hasher = new Crc32())
+            using var hasher = new Crc32();
+            byte[] hashvalue;
+            using (var stream = new BufferedStream(File.OpenRead(filePath), bufferSize))
             {
-                byte[] hashvalue;
-                using (var stream = new BufferedStream(File.OpenRead(filePath), bufferSize))
-                {
-                    await stream.FlushAsync();
-                    hashvalue = hasher.ComputeHash(stream);
-                }
-                return BitConverter.ToString(hashvalue);
+                await stream.FlushAsync();
+                hashvalue = hasher.ComputeHash(stream);
             }
+            return BitConverter.ToString(hashvalue);
         }
 
         public static async Task<string> CalculateFarmhashAsync(string filePath)
@@ -141,7 +137,7 @@ namespace FileZapper.Core.Engine
                 }
                 hashtimer.Stop();
                 zfile.HashTime = hashtimer.ElapsedMilliseconds;
-                _log.Verbose("File hashed {@Zfile}", zfile);
+                _log.ForContext(nameof(zfile), zfile, true).Verbose("File hashed {zfile}", zfile);
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
                     throw new FileZapperUpdateDictionaryFailureException("ZapperFiles", zfile.FullPath);

@@ -1,6 +1,6 @@
 ﻿/*
     FileZapper - Finds and removed duplicate files
-    Copyright (C) 2018 Peter Wetzel
+    Copyright (C) 2022 Peter Wetzel
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -90,42 +90,36 @@ namespace FileZapper.Core.Engine
 
                 if (ZapperProcessor.Settings.Hasher == "MD5")
                 {
-                    using (MD5CryptoServiceProvider hasher = new MD5CryptoServiceProvider())
-                    {
-                        byte[] hashvalue;
-                        using (var stream = File.OpenRead(zfile.FullPath))
-                        {
-                            stream.Seek(zfile.SampleBytesOffset, SeekOrigin.Begin);
-                            stream.Read(buffer, 0, zfile.SampleBytesSize);
-                            hashvalue = hasher.ComputeHash(buffer);
-                        }
-                        zfile.SampleHash = BitConverter.ToString(hashvalue);
-                    }
-                }
-                else if (ZapperProcessor.Settings.Hasher == "CRC")
-                {
-                    using (Crc32 hasher = new Crc32())
-                    {
-                        byte[] hashvalue;
-                        using (var stream = File.OpenRead(zfile.FullPath))
-                        {
-                            stream.Seek(zfile.SampleBytesOffset, SeekOrigin.Begin);
-                            stream.Read(buffer, 0, zfile.SampleBytesSize);
-                            hashvalue = hasher.ComputeHash(buffer);
-                        }
-                        zfile.SampleHash = BitConverter.ToString(hashvalue);
-                    }
-                }
-                else
-                {
+                    using var hasher = MD5.Create();
+                    byte[] hashvalue;
                     using (var stream = File.OpenRead(zfile.FullPath))
                     {
                         stream.Seek(zfile.SampleBytesOffset, SeekOrigin.Begin);
                         stream.Read(buffer, 0, zfile.SampleBytesSize);
-                        zfile.SampleHash = Farmhash.Sharp.Farmhash.Hash64(buffer, buffer.Length).ToString();
+                        hashvalue = hasher.ComputeHash(buffer);
                     }
+                    zfile.SampleHash = BitConverter.ToString(hashvalue);
                 }
-                _log.Verbose("File sample hashed {@Zfile}", zfile);
+                else if (ZapperProcessor.Settings.Hasher == "CRC")
+                {
+                    using var hasher = new Crc32();
+                    byte[] hashvalue;
+                    using (var stream = File.OpenRead(zfile.FullPath))
+                    {
+                        stream.Seek(zfile.SampleBytesOffset, SeekOrigin.Begin);
+                        stream.Read(buffer, 0, zfile.SampleBytesSize);
+                        hashvalue = hasher.ComputeHash(buffer);
+                    }
+                    zfile.SampleHash = BitConverter.ToString(hashvalue);
+                }
+                else
+                {
+                    using var stream = File.OpenRead(zfile.FullPath);
+                    stream.Seek(zfile.SampleBytesOffset, SeekOrigin.Begin);
+                    stream.Read(buffer, 0, zfile.SampleBytesSize);
+                    zfile.SampleHash = Farmhash.Sharp.Farmhash.Hash64(buffer, buffer.Length).ToString();
+                }
+                _log.ForContext(nameof(zfile), zfile, true).Verbose("File sample hashed {zfile}", zfile);
                 if (!ZapperProcessor.ZapperFiles.TryUpdate(zfile.FullPath, zfile, zfile))
                 {
                     throw new FileZapperUpdateDictionaryFailureException("ZapperFiles", zfile.FullPath);
